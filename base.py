@@ -15,9 +15,13 @@
 # import Set
 
 from classes import *
+from typing import Callable
 
-def parseUITreeWithDisplayRegionFromUITree( uiTree: UITreeNode ) -> UITreeNodeWithDisplayRegion:
-    pass
+
+def parseUITreeWithDisplayRegionFromUITree(uiTree: UITreeNode) -> UITreeNodeWithDisplayRegion:
+    selfDisplayRegion = getDisplayRegionFromDictEntries(
+        uiTree) or DisplayRegion(**{'x': 0, 'y': 0, 'width': 0, 'height': 0})
+    return asUITreeNodeWithDisplayRegion(uiTree)(selfDisplayRegion, selfDisplayRegion)
 # parseUITreeWithDisplayRegionFromUITree : UITreeNode -> UITreeNodeWithDisplayRegion
 # parseUITreeWithDisplayRegionFromUITree uiTree =
 #     let
@@ -30,8 +34,39 @@ def parseUITreeWithDisplayRegionFromUITree( uiTree: UITreeNode ) -> UITreeNodeWi
 #             , totalDisplayRegion = selfDisplayRegion
 #             }
 
-def parseUserinterfaceFromUITree( uiTree: UITreeNode ) -> ParsedUserinterface:
-  pass
+
+def parseUserinterfaceFromUITree(uiTree: UITreeNodeWithDisplayRegion) -> ParsedUserInterface:
+    x = ParsedUserInterface()
+    x.uiTree = uiTree
+    x.contextMenus = parseContextMenusFromUITreeRoot(uiTree)
+    x.shipUI = parseShipUIFromUITreeRoot(uiTree)
+    x.targets = parseTargetsFromUITreeRoot(uiTree)
+    x.infoPanelContainer = parseInfoPanelContainerFromUIRoot(uiTree)
+    x.overviewWindow = parseOverviewWindowFromUITreeRoot(uiTree)
+    x.selectedItemWindow = parseSelectedItemWindowFromUITreeRoot(uiTree)
+    x.dronesWindow = parseDronesWindowFromUITreeRoot(uiTree)
+    x.fittingWindow = parseFittingWindowFromUITreeRoot(uiTree)
+    x.probeScannerWindow = parseProbeScannerWindowFromUITreeRoot(uiTree)
+    x.directionalScannerWindow = parseDirectionalScannerWindowFromUITreeRoot(uiTree)
+    x.stationWindow = parseStationWindowFromUITreeRoot(uiTree)
+    x.inventoryWindows = parseInventoryWindowsFromUITreeRoot(uiTree)
+    x.moduleButtonTooltip = parseModuleButtonTooltipFromUITreeRoot(uiTree)
+    x.chatWindowStacks = parseChatWindowStacksFromUITreeRoot(uiTree)
+    x.agentConversationWindows = parseAgentConversationWindowsFromUITreeRoot(uiTree)
+    x.marketOrdersWindow = parseMarketOrdersWindowFromUITreeRoot(uiTree)
+    x.surveyScanWindow = parseSurveyScanWindowFromUITreeRoot(uiTree)
+    x.bookmarkLocationWindow = parseBookmarkLocationWindowFromUITreeRoot(uiTree)
+    x.repairShopWindow = parseRepairShopWindowFromUITreeRoot(uiTree)
+    x.characterSheetWindow = parseCharacterSheetWindowFromUITreeRoot(uiTree)
+    x.fleetWindow = parseFleetWindowFromUITreeRoot(uiTree)
+    x.watchListPanel = parseWatchListPanelFromUITreeRoot(uiTree)
+    x.standaloneBookmarkWindow = parseStandaloneBookmarkWindowFromUITreeRoot(uiTree)
+    x.neocom = parseNeocomFromUITreeRoot(uiTree)
+    x.messageBoxes = parseMessageBoxesFromUITreeRoot(uiTree)
+    x.layerAbovemain = parseLayerAbovemainFromUITreeRoot(uiTree)
+    x.keyActivationWindow = parseKeyActivationWindowFromUITreeRoot(uiTree)
+    return x
+
 
 # parseUserinterfaceFromUITree : UITreeNodeWithDisplayRegion -> ParsedUserinterface
 # parseUserinterfaceFromUITree uiTree =
@@ -65,12 +100,12 @@ def parseUserinterfaceFromUITree( uiTree: UITreeNode ) -> ParsedUserinterface:
 #     , keyActivationWindow = parseKeyActivationWindowFromUITreeRoot uiTree
 #     }
 
-def asUITreeNodeWithDisplayRegion(selfDisplayRegion: DisplayRegion, totalDisplayRegion: DisplayRegion) -> function:
 
+def asUITreeNodeWithDisplayRegion(selfDisplayRegion: DisplayRegion, totalDisplayRegion: DisplayRegion) -> Callable[[UITreeNode], UITreeNodeWithDisplayRegion]:
 
-  def myFunc(node: UITreeNode) -> UITreeNodeWithDisplayRegion:
-    pass
-  return myFunc
+    def myFunc(node: UITreeNode) -> UITreeNodeWithDisplayRegion:
+        pass
+    return myFunc
 
 # asUITreeNodeWithDisplayRegion : { selfDisplayRegion : DisplayRegion, totalDisplayRegion : DisplayRegion } -> UITreeNode -> UITreeNodeWithDisplayRegion
 # asUITreeNodeWithDisplayRegion { selfDisplayRegion, totalDisplayRegion } uiNode =
@@ -80,11 +115,12 @@ def asUITreeNodeWithDisplayRegion(selfDisplayRegion: DisplayRegion, totalDisplay
 #     , totalDisplayRegion = totalDisplayRegion
 #     }
 
-def asUITreeNodeWithInheritedOffset(rawNode: NamedTuple(x= int, y= int)) -> function:
-  
-  def myFunc(node: UITreeNode) -> UITreeNodeWithDisplayRegion:
-    pass
-  return myFunc
+
+def asUITreeNodeWithInheritedOffset(rawNode: NamedTuple(x=int, y=int)) -> Callable[[UITreeNode], UITreeNodeWithDisplayRegion]:
+
+    def myFunc(node: UITreeNode) -> UITreeNodeWithDisplayRegion:
+        pass
+    return myFunc
 
 # asUITreeNodeWithInheritedOffset : { x : int, y : int } -> UITreeNode -> ChildOfNodeWithDisplayRegion
 # asUITreeNodeWithInheritedOffset inheritedOffset rawNode =
@@ -101,8 +137,9 @@ def asUITreeNodeWithInheritedOffset(rawNode: NamedTuple(x= int, y= int)) -> func
 #                     rawNode
 #                 )
 
+
 def getDisplayRegionFromDictEntries(uiNode: UITreeNode) -> Optional[DisplayRegion]:
-  pass
+    pass
 # getDisplayRegionFromDictEntries : UITreeNode -> Maybe DisplayRegion
 # getDisplayRegionFromDictEntries uiNode =
 #     let
@@ -128,8 +165,9 @@ def getDisplayRegionFromDictEntries(uiNode: UITreeNode) -> Optional[DisplayRegio
 #         _ ->
 #             Nothing
 
+
 def parseContextMenusFromUITreeRoot(uiTreeRoot: UITreeNodeWithDisplayRegion) -> List[ContextMenu]:
-  pass
+    pass
 
 # parseContextMenusFromUITreeRoot : UITreeNodeWithDisplayRegion -> List ContextMenu
 # parseContextMenusFromUITreeRoot uiTreeRoot =
@@ -147,8 +185,9 @@ def parseContextMenusFromUITreeRoot(uiTreeRoot: UITreeNodeWithDisplayRegion) -> 
 #                 |> List.filter (.uiNode >> .pythonObjectTypeName >> str.toLower >> str.contains "menu")
 #                 |> List.map parseContextMenu
 
-def parseContextMenusFromUITreeRoot(uiTreeRoot: UITreeNodeWithDisplayRegion) -> Optional[InfoPanelContainer]:
-  pass
+
+def parseInfoPanelContainerFromUIRoot(uiTreeRoot: UITreeNodeWithDisplayRegion) -> Optional[InfoPanelContainer]:
+    pass
 # parseContextMenusFromUITreeRoot : UITreeNodeWithDisplayRegion -> Maybe InfoPanelContainer
 # parseInfoPanelContainerFromUIRoot uiTreeRoot =
 #     case
@@ -169,8 +208,9 @@ def parseContextMenusFromUITreeRoot(uiTreeRoot: UITreeNodeWithDisplayRegion) -> 
 #                 , infoPanelAgentMissions = parseInfoPanelAgentMissionsFromInfoPanelContainer containerNode
 #                 }
 
+
 def parseInfoPanelIconsFromInfoPanelContainer(infoPanelContainerNode: UITreeNodeWithDisplayRegion) -> Optional[InfoPanelIcons]:
-  pass
+    pass
 
 # parseInfoPanelIconsFromInfoPanelContainer : UITreeNodeWithDisplayRegion -> Maybe InfoPanelIcons
 # parseInfoPanelIconsFromInfoPanelContainer infoPanelContainerNode =
@@ -205,8 +245,9 @@ def parseInfoPanelIconsFromInfoPanelContainer(infoPanelContainerNode: UITreeNode
 #                 , dailyChallenge = iconNodeFromTexturePathEnd "dailyChallenge.png"
 #                 }
 
-def parseInfoPanelLocationInfoFromInfoPanelContainer(infoPanelContainerNode:UITreeNodeWithDisplayRegion) -> Optional[InfoPanelLocationInfo]:
-  pass
+
+def parseInfoPanelLocationInfoFromInfoPanelContainer(infoPanelContainerNode: UITreeNodeWithDisplayRegion) -> Optional[InfoPanelLocationInfo]:
+    pass
 # parseInfoPanelLocationInfoFromInfoPanelContainer : UITreeNodeWithDisplayRegion -> Maybe InfoPanelLocationInfo
 # parseInfoPanelLocationInfoFromInfoPanelContainer infoPanelContainerNode =
 #     case
@@ -265,8 +306,9 @@ def parseInfoPanelLocationInfoFromInfoPanelContainer(infoPanelContainerNode:UITr
 #                         }
 #                     )
 
+
 def parseSecurityStatusPercentFromUINodeText(s: str) -> Optional[int]:
-  pass
+    pass
 # parseSecurityStatusPercentFromUINodeText : str -> Maybe int
 # parseSecurityStatusPercentFromUINodeText =
 #     Maybe.Extra.oneOf
@@ -276,8 +318,9 @@ def parseSecurityStatusPercentFromUINodeText(s: str) -> Optional[int]:
 #         >> Maybe.andThen (str.trim >> str.toFloat)
 #         >> Maybe.map ((*) 100 >> round)
 
+
 def parseCurrentSolarSystemFromUINodeText(s: str) -> Optional[str]:
-  pass
+    pass
 # parseCurrentSolarSystemFromUINodeText : str -> Maybe str
 # parseCurrentSolarSystemFromUINodeText =
 #     Maybe.Extra.oneOf
@@ -285,15 +328,17 @@ def parseCurrentSolarSystemFromUINodeText(s: str) -> Optional[str]:
 #         , getSubstrBetweenXmlTagsAfterMarker "alt=\"Current Solar System\""
 #         ]
 
+
 def parseCurrentStationNameFromInfoPanelLocationInfoLabelText(s: str) -> Optional[str]:
-  pass
+    pass
 # parseCurrentStationNameFromInfoPanelLocationInfoLabelText : str -> Maybe str
 # parseCurrentStationNameFromInfoPanelLocationInfoLabelText =
 #     getSubstrBetweenXmlTagsAfterMarker "alt='Current Station'"
 #         >> Maybe.map str.trim
 
+
 def parseInfoPanelRouteFromInfoPanelContainer(infoPanelContainerNode: UITreeNodeWithDisplayRegion) -> Optional[InfoPanelRoute]:
-  pass
+    pass
 # parseInfoPanelRouteFromInfoPanelContainer : UITreeNodeWithDisplayRegion -> Maybe InfoPanelRoute
 # parseInfoPanelRouteFromInfoPanelContainer infoPanelContainerNode =
 #     case
@@ -314,8 +359,9 @@ def parseInfoPanelRouteFromInfoPanelContainer(infoPanelContainerNode: UITreeNode
 #             in
 #             Just { uiNode = infoPanelRouteNode, routeElementMarker = routeElementMarker }
 
+
 def parseInfoPanelAgentMissionsFromInfoPanelContainer(infoPanelContainerNode: UITreeNodeWithDisplayRegion) -> Optional[InfoPanelAgentMissions]:
-  pass
+    pass
 # parseInfoPanelAgentMissionsFromInfoPanelContainer : UITreeNodeWithDisplayRegion -> Maybe InfoPanelAgentMissions
 # parseInfoPanelAgentMissionsFromInfoPanelContainer infoPanelContainerNode =
 #     case
@@ -339,8 +385,9 @@ def parseInfoPanelAgentMissionsFromInfoPanelContainer(infoPanelContainerNode: UI
 #                 , entries = entries
 #                 }
 
+
 def parseContextMenu(contextMenuUINOde: UITreeNodeWithDisplayRegion) -> ContextMenu:
-  pass
+    pass
 # parseContextMenu : UITreeNodeWithDisplayRegion -> ContextMenu
 # parseContextMenu contextMenuUINode =
 #     let
@@ -371,8 +418,9 @@ def parseContextMenu(contextMenuUINOde: UITreeNodeWithDisplayRegion) -> ContextM
 #     , entries = entries
 #     }
 
+
 def parseShipUIFromUITreeRoot(uiTreeRoot: UITreeNodeWithDisplayRegion) -> Optional[ShipUI]:
-  pass
+    pass
 # parseShipUIFromUITreeRoot : UITreeNodeWithDisplayRegion -> Maybe ShipUI
 # parseShipUIFromUITreeRoot uiTreeRoot =
 #     case
@@ -473,8 +521,9 @@ def parseShipUIFromUITreeRoot(uiTreeRoot: UITreeNodeWithDisplayRegion) -> Option
 #                                 }
 #                             )
 
-def parseShipUIModuleButton( slotNode: UITreeNodeWithDisplayRegion, moduleButtonNode: UITreeNodeWithDisplayRegion) -> ShipUIModuleButton:
-  pass
+
+def parseShipUIModuleButton(slotNode: UITreeNodeWithDisplayRegion, moduleButtonNode: UITreeNodeWithDisplayRegion) -> ShipUIModuleButton:
+    pass
 # parseShipUIModuleButton : { slotNode : UITreeNodeWithDisplayRegion, moduleButtonNode : UITreeNodeWithDisplayRegion } -> ShipUIModuleButton
 # parseShipUIModuleButton { slotNode, moduleButtonNode } =
 #     let
@@ -513,8 +562,9 @@ def parseShipUIModuleButton( slotNode: UITreeNodeWithDisplayRegion, moduleButton
 #     , rampRotationMilli = rampRotationMilli
 #     }
 
+
 def parseShipUICapacitorFromUINode(capacitorUINode: UITreeNodeWithDisplayRegion) -> ShipUICapacitor:
-  pass
+    pass
 # parseShipUICapacitorFromUINode : UITreeNodeWithDisplayRegion -> ShipUICapacitor
 # parseShipUICapacitorFromUINode capacitorUINode =
 #     let
@@ -547,11 +597,12 @@ def parseShipUICapacitorFromUINode(capacitorUINode: UITreeNodeWithDisplayRegion)
 #     , levelFromPmarksPercent = levelFromPmarksPercent
 #     }
 
-def groupShipUIModulesintoRows( capacitor: ShipUICapacitor ) -> function:
-  
-  def myFunc(modules: List[ShipUIModuleButton]) -> ModuleRows:
-    pass
-  return myFunc
+
+def groupShipUIModulesintoRows(capacitor: ShipUICapacitor) -> Callable[[List[ShipUIModuleButton]], ModuleRows]:
+
+    def myFunc(modules: List[ShipUIModuleButton]) -> ModuleRows:
+        pass
+    return myFunc
 # groupShipUIModulesintoRows :
 #     ShipUICapacitor
 #     -> List ShipUIModuleButton
@@ -576,8 +627,10 @@ def groupShipUIModulesintoRows( capacitor: ShipUICapacitor ) -> function:
 #                     { previousRows | middle = shipModule :: previousRows.middle }
 #             )
 #             { top = [], middle = [], bottom = [] }
+
+
 def parseShipIndication(indicationUINode: UITreeNodeWithDisplayRegion) -> ShipUIIndication:
-  pass
+    pass
 # parseShipUIIndication : UITreeNodeWithDisplayRegion -> ShipUIIndication
 # parseShipUIIndication indicationUINode =
 #     let
@@ -605,6 +658,8 @@ def parseShipIndication(indicationUINode: UITreeNodeWithDisplayRegion) -> ShipUI
 #     { uiNode = indicationUINode, maneuverType = maneuverType }
 
 
+def parseSquadronsUI(squadronsUINode: UITreeNodeWithDisplayRegion) -> SquadronsUI:
+    pass
 # parseSquadronsUI : UITreeNodeWithDisplayRegion -> SquadronsUI
 # parseSquadronsUI squadronsUINode =
 #     { uiNode = squadronsUINode
@@ -615,6 +670,9 @@ def parseShipIndication(indicationUINode: UITreeNodeWithDisplayRegion) -> ShipUI
 #             |> List.map parseSquadronUI
 #     }
 
+
+def parseSquadronUI(squadronUINode: UITreeNodeWithDisplayRegion) -> SquadronUI:
+    pass
 # parseSquadronUI : UITreeNodeWithDisplayRegion -> SquadronUI
 # parseSquadronUI squadronUINode =
 #     { uiNode = squadronUINode
@@ -630,6 +688,9 @@ def parseShipIndication(indicationUINode: UITreeNodeWithDisplayRegion) -> ShipUI
 #             |> List.head
 #     }
 
+
+def parseSquadronAbilityIcon(abilityIconUINode: UITreeNodeWithDisplayRegion) -> SquadronAbilityIcon:
+    pass
 # parseSquadronAbilityIcon : UITreeNodeWithDisplayRegion -> SquadronAbilityIcon
 # parseSquadronAbilityIcon abilityIconUINode =
 #     { uiNode = abilityIconUINode
@@ -646,12 +707,18 @@ def parseShipIndication(indicationUINode: UITreeNodeWithDisplayRegion) -> ShipUI
 #             |> Maybe.andThen (Json.Decode.decodeValue Json.Decode.bool >> Result.toMaybe)
 #     }
 
+
+def parseTargetsFromUITreeRoot(x: UITreeNodeWithDisplayRegion) -> List[Target]:
+    pass
 # parseTargetsFromUITreeRoot : UITreeNodeWithDisplayRegion -> List Target
 # parseTargetsFromUITreeRoot =
 #     listDescendantsWithDisplayRegion
 #         >> List.filter (.uiNode >> .pythonObjectTypeName >> (==) "TargetInBar")
 #         >> List.map parseTarget
 
+
+def parseTarget(targetNode: UITreeNodeWithDisplayRegion) -> Target:
+    pass
 # parseTarget : UITreeNodeWithDisplayRegion -> Target
 # parseTarget targetNode =
 #     let
@@ -689,6 +756,9 @@ def parseShipIndication(indicationUINode: UITreeNodeWithDisplayRegion) -> ShipUI
 #     , assignedIcons = assignedIcons
 #     }
 
+
+def parseOverviewWindowFromUITreeRoot(uiTreeRoot: UITreeNodeWithDisplayRegion) -> Optional[OverviewWindow]:
+    pass
 # parseOverviewWindowFromUITreeRoot : UITreeNodeWithDisplayRegion -> Maybe OverviewWindow
 # parseOverviewWindowFromUITreeRoot uiTreeRoot =
 #     case
@@ -735,6 +805,11 @@ def parseShipIndication(indicationUINode: UITreeNodeWithDisplayRegion) -> ShipUI
 #                 , scrollControls = scrollControlsNode |> Maybe.map parseScrollControls
 #                 }
 
+
+def parseOverviewWindowEntry(entriesHeaders: List[Union[str, UITreeNodeWithDisplayRegion]]) -> Callable[[UITreeNodeWithDisplayRegion], OverviewWindowEntry]:
+    def fn(x: UITreeNodeWithDisplayRegion) -> OverviewWindowEntry:
+        pass
+    return fn
 # parseOverviewWindowEntry : List ( str, UITreeNodeWithDisplayRegion ) -> UITreeNodeWithDisplayRegion -> OverviewWindowEntry
 # parseOverviewWindowEntry entriesHeaders overviewEntryNode =
 #     let
@@ -830,6 +905,9 @@ def parseShipIndication(indicationUINode: UITreeNodeWithDisplayRegion) -> ShipUI
 #     , commonIndications = commonIndications
 #     }
 
+
+def parseOverviewEntryDistanceInMetersFromText(distanceDisplayTextBeforeTrim: str) -> Union[str, int]:
+    pass
 # parseOverviewEntryDistanceInMetersFromText : str -> Result str int
 # parseOverviewEntryDistanceInMetersFromText distanceDisplayTextBeforeTrim =
 #     case distanceDisplayTextBeforeTrim |> str.trim |> str.split " " |> List.reverse of
@@ -848,6 +926,9 @@ def parseShipIndication(indicationUINode: UITreeNodeWithDisplayRegion) -> ShipUI
 #         _ ->
 #             Err "Expecting at least one whitespace character separating number and unit."
 
+
+def parseDistanceUnitInMeters(unitText: str) -> Optional[int]:
+    pass
 # parseDistanceUnitInMeters : str -> Maybe int
 # parseDistanceUnitInMeters unitText =
 #     case str.trim unitText of
@@ -858,6 +939,9 @@ def parseShipIndication(indicationUINode: UITreeNodeWithDisplayRegion) -> ShipUI
 #         _ ->
 #             Nothing
 
+
+def parseSelectedItemWindowFromUITreeRoot(uiTreeRoot: UITreeNodeWithDisplayRegion) -> Optional[SelectedItemWindow]:
+    pass
 # parseSelectedItemWindowFromUITreeRoot : UITreeNodeWithDisplayRegion -> Maybe SelectedItemWindow
 # parseSelectedItemWindowFromUITreeRoot uiTreeRoot =
 #     uiTreeRoot
@@ -866,6 +950,9 @@ def parseShipIndication(indicationUINode: UITreeNodeWithDisplayRegion) -> ShipUI
 #         |> List.head
 #         |> Maybe.map parseSelectedItemWindow
 
+
+def parseSelectedItemWindow(windowNode: UITreeNodeWithDisplayRegion) -> SelectedItemWindow:
+    pass
 # parseSelectedItemWindow : UITreeNodeWithDisplayRegion -> SelectedItemWindow
 # parseSelectedItemWindow windowNode =
 #     let
@@ -884,6 +971,9 @@ def parseShipIndication(indicationUINode: UITreeNodeWithDisplayRegion) -> ShipUI
 #     in
 #     { uiNode = windowNode, orbitButton = orbitButton }
 
+
+def parseDronesWindowFromUITreeRoot(uiTreeRoot: UITreeNodeWithDisplayRegion) -> Optional[DronesWindow]:
+    pass
 # parseDronesWindowFromUITreeRoot : UITreeNodeWithDisplayRegion -> Maybe DronesWindow
 # parseDronesWindowFromUITreeRoot uiTreeRoot =
 #     case
@@ -934,6 +1024,9 @@ def parseShipIndication(indicationUINode: UITreeNodeWithDisplayRegion) -> ShipUI
 #                 , droneGroupInLocalSpace = droneGroupFromHeaderTextPart "in local space"
 #                 }
 
+
+def dronesGroupTreesFromFlatListOfEntries(entriesBeforeOrdering: List[DronesWindowEntry]) -> List[DronesWindowEntryGroupStructure]:
+    pass
 # dronesGroupTreesFromFlatListOfEntries : List DronesWindowEntry -> List DronesWindowEntryGroupStructure
 # dronesGroupTreesFromFlatListOfEntries entriesBeforeOrdering =
 #     let
@@ -1008,6 +1101,9 @@ def parseShipIndication(indicationUINode: UITreeNodeWithDisplayRegion) -> ShipUI
 #             )
 #         |> Maybe.withDefault []
 
+
+def enumerateAllDronesFromDronesGroup(x: DronesWindowEntryGroupStructure) -> List[DronesWindowEntryDroneStructure]:
+    pass
 # enumerateAllDronesFromDronesGroup : DronesWindowEntryGroupStructure -> List DronesWindowEntryDroneStructure
 # enumerateAllDronesFromDronesGroup =
 #     enumerateDescendantsOfDronesGroup
@@ -1020,6 +1116,9 @@ def parseShipIndication(indicationUINode: UITreeNodeWithDisplayRegion) -> ShipUI
 #                         Nothing
 #             )
 
+
+def enumerateDescendantsOfDronesGroup(group: DronesWindowEntryGroupStructure) -> List[DronesWindowEntry]:
+    pass
 # enumerateDescendantsOfDronesGroup : DronesWindowEntryGroupStructure -> List DronesWindowEntry
 # enumerateDescendantsOfDronesGroup group =
 #     group.children
@@ -1032,6 +1131,9 @@ def parseShipIndication(indicationUINode: UITreeNodeWithDisplayRegion) -> ShipUI
 #                         child :: enumerateDescendantsOfDronesGroup childGroup
 #             )
 
+
+def parseDronesWindowDroneGroupHeader(groupHeaderUiNode: UITreeNodeWithDisplayRegion) -> Optional[DronesWindowDroneGroupHeader]:
+    pass
 # parseDronesWindowDroneGroupHeader : UITreeNodeWithDisplayRegion -> Maybe DronesWindowDroneGroupHeader
 # parseDronesWindowDroneGroupHeader groupHeaderUiNode =
 #     case
@@ -1063,6 +1165,9 @@ def parseShipIndication(indicationUINode: UITreeNodeWithDisplayRegion) -> ShipUI
 #         _ ->
 #             Nothing
 
+
+def parseQuantityFromDroneGroupTitleText(droneGroupTitleText: str) -> Optional[Union[str, int]]:
+    pass
 # parseQuantityFromDroneGroupTitleText : str -> Result str (Maybe int)
 # parseQuantityFromDroneGroupTitleText droneGroupTitleText =
 #     case droneGroupTitleText |> str.split "(" |> List.drop 1 of
@@ -1078,6 +1183,9 @@ def parseShipIndication(indicationUINode: UITreeNodeWithDisplayRegion) -> ShipUI
 #         _ ->
 #             Err "Found unexpected number of parentheses."
 
+
+def parseDronesWindowDroneEntry(droneEntryNode: UITreeNodeWithDisplayRegion) -> DronesWindowEntryDroneStructure:
+    pass
 # parseDronesWindowDroneEntry : UITreeNodeWithDisplayRegion -> DronesWindowEntryDroneStructure
 # parseDronesWindowDroneEntry droneEntryNode =
 #     let
@@ -1135,6 +1243,9 @@ def parseShipIndication(indicationUINode: UITreeNodeWithDisplayRegion) -> ShipUI
 #     , hitpointsPercent = hitpointsPercent
 #     }
 
+
+def parseProbeScannerWindowFromUITreeRoot(uiTreeRoot: UITreeNodeWithDisplayRegion) -> Optional[ProbeScannerWindow]:
+    pass
 # parseProbeScannerWindowFromUITreeRoot : UITreeNodeWithDisplayRegion -> Maybe ProbeScannerWindow
 # parseProbeScannerWindowFromUITreeRoot uiTreeRoot =
 #     case
@@ -1174,6 +1285,11 @@ def parseShipIndication(indicationUINode: UITreeNodeWithDisplayRegion) -> ShipUI
 #             in
 #             Just { uiNode = windowNode, scanResults = scanResults }
 
+
+def parseProbeScanResult(entriesHeaders: List[Union[str, UITreeNodeWithDisplayRegion]]) -> Callable[[UITreeNodeWithDisplayRegion], ProbeScanResult]:
+    def fn(x: UITreeNodeWithDisplayRegion) -> ProbeScanResult:
+        pass
+    return fn
 # parseProbeScanResult : List ( str, UITreeNodeWithDisplayRegion ) -> UITreeNodeWithDisplayRegion -> ProbeScanResult
 # parseProbeScanResult entriesHeaders scanResultNode =
 #     let
@@ -1220,6 +1336,9 @@ def parseShipIndication(indicationUINode: UITreeNodeWithDisplayRegion) -> ShipUI
 #     , warpButton = warpButton
 #     }
 
+
+def parseDirectionalScannerWindowFromUITreeRoot(uiTreeRoot: UITreeNodeWithDisplayRegion) -> Optional[DirectionalScannerWindow]:
+    pass
 # parseDirectionalScannerWindowFromUITreeRoot : UITreeNodeWithDisplayRegion -> Maybe DirectionalScannerWindow
 # parseDirectionalScannerWindowFromUITreeRoot uiTreeRoot =
 #     case
@@ -1250,6 +1369,9 @@ def parseShipIndication(indicationUINode: UITreeNodeWithDisplayRegion) -> ShipUI
 #                 , scanResults = scanResultsNodes
 #                 }
 
+
+def parseStationWindowFromUITreeRoot(uiTreeroot: UITreeNodeWithDisplayRegion) -> Optional[StationWindow]:
+    parseShipUICapacitorFromUINode
 # parseStationWindowFromUITreeRoot : UITreeNodeWithDisplayRegion -> Maybe StationWindow
 # parseStationWindowFromUITreeRoot uiTreeRoot =
 #     case
@@ -1283,6 +1405,9 @@ def parseShipIndication(indicationUINode: UITreeNodeWithDisplayRegion) -> ShipUI
 #                 , abortUndockButton = buttonFromDisplayText "undocking"
 #                 }
 
+
+def parseInventoryWindowsFromUITreeRoot(uiTreeRoot: UITreeNodeWithDisplayRegion) -> List[InventoryWindow]:
+    pass
 # parseInventoryWindowsFromUITreeRoot : UITreeNodeWithDisplayRegion -> List InventoryWindow
 # parseInventoryWindowsFromUITreeRoot uiTreeRoot =
 #     uiTreeRoot
@@ -1290,6 +1415,9 @@ def parseShipIndication(indicationUINode: UITreeNodeWithDisplayRegion) -> ShipUI
 #         |> List.filter (\uiNode -> [ "InventoryPrimary", "ActiveShipCargo" ] |> List.member uiNode.uiNode.pythonObjectTypeName)
 #         |> List.map parseInventoryWindow
 
+
+def parseInventoryWindow(windowUiNode: UITreeNodeWithDisplayRegion) -> InventoryWindow:
+    pass
 # parseInventoryWindow : UITreeNodeWithDisplayRegion -> InventoryWindow
 # parseInventoryWindow windowUiNode =
 #     let
@@ -1387,6 +1515,9 @@ def parseShipIndication(indicationUINode: UITreeNodeWithDisplayRegion) -> ShipUI
 #     , buttonToSwitchToListView = buttonToSwitchToListView
 #     }
 
+
+def getContainedTreeViewEntryRootNodes(parentNode: UITreeNodeWithDisplayRegion) -> List[UITreeNodeWithDisplayRegion]:
+    pass
 # getContainedTreeViewEntryRootNodes : UITreeNodeWithDisplayRegion -> List UITreeNodeWithDisplayRegion
 # getContainedTreeViewEntryRootNodes parentNode =
 #     let
@@ -1402,6 +1533,9 @@ def parseShipIndication(indicationUINode: UITreeNodeWithDisplayRegion) -> ShipUI
 #     leftTreeEntriesAllNodes
 #         |> List.filter (isContainedintreeEntry >> not)
 
+
+def parseInventoryWindowTreeViewEntry(treeEntryNode: UITreeNodeWithDisplayRegion) -> InventoryWindowLeftTreeEntry:
+    pass
 # parseInventoryWindowTreeViewEntry : UITreeNodeWithDisplayRegion -> InventoryWindowLeftTreeEntry
 # parseInventoryWindowTreeViewEntry treeEntryNode =
 #     let
@@ -1437,12 +1571,18 @@ def parseShipIndication(indicationUINode: UITreeNodeWithDisplayRegion) -> ShipUI
 #     , children = children
 #     }
 
+
+def unwrapInventoryWindowLeftTreeEntryChild(child: InventoryWindowLeftTreeEntryChild) -> InventoryWindowLeftTreeEntry:
+    pass
 # unwrapInventoryWindowLeftTreeEntryChild : InventoryWindowLeftTreeEntryChild -> InventoryWindowLeftTreeEntry
 # unwrapInventoryWindowLeftTreeEntryChild child =
 #     case child of
 #         InventoryWindowLeftTreeEntryChild unpacked ->
 #             unpacked
 
+
+def parseInventoryCapacityGaugeText(capacityText: str) -> Union[str, InventoryWindowCapacityGauge]:
+    pass
 # parseInventoryCapacityGaugeText : str -> Result str InventoryWindowCapacityGauge
 # parseInventoryCapacityGaugeText capacityText =
 #     let
@@ -1480,6 +1620,9 @@ def parseShipIndication(indicationUINode: UITreeNodeWithDisplayRegion) -> ShipUI
 #         _ ->
 #             Err ("Unexpected number of components in capacityText '" ++ capacityText ++ "'")
 
+
+def parseModuleButtonTooltipFromUITreeRoot(uiTreeRoot: UITreeNodeWithDisplayRegion) -> Optional[ModuleButtonTooltip]:
+    pass
 # parseModuleButtonTooltipFromUITreeRoot : UITreeNodeWithDisplayRegion -> Maybe ModuleButtonTooltip
 # parseModuleButtonTooltipFromUITreeRoot uiTreeRoot =
 #     case
@@ -1493,6 +1636,9 @@ def parseShipIndication(indicationUINode: UITreeNodeWithDisplayRegion) -> ShipUI
 #         Just uiNode ->
 #             Just (parseModuleButtonTooltip uiNode)
 
+
+def parseModuleButtonTooltip(tooltipUINode: UITreeNodeWithDisplayRegion) -> ModuleButtonTooltip:
+    pass
 # parseModuleButtonTooltip : UITreeNodeWithDisplayRegion -> ModuleButtonTooltip
 # parseModuleButtonTooltip tooltipUINode =
 #     let
@@ -1546,6 +1692,9 @@ def parseShipIndication(indicationUINode: UITreeNodeWithDisplayRegion) -> ShipUI
 #     , optimalRange = optimalRange
 #     }
 
+
+def parseModuleButtonTooltipShortcut(shortcutText: str) -> Union[str, List[CUSTOMKEYCODE]]:
+    pass
 # parseModuleButtonTooltipShortcut : str -> Result str (List Common.EffectOnWindow.VirtualKeyCode)
 # parseModuleButtonTooltipShortcut shortcutText =
 #     shortcutText
@@ -1568,6 +1717,9 @@ def parseShipIndication(indicationUINode: UITreeNodeWithDisplayRegion) -> ShipUI
 #             (Ok [])
 #         |> Result.map List.reverse
 
+
+def parseKeyShortcutText(keytext: str) -> Optional[CUSTOMKEYCODE]:
+    pass
 # parseKeyShortcutText : str -> Maybe Common.EffectOnWindow.VirtualKeyCode
 # parseKeyShortcutText keyText =
 #     [ ( "CTRL", Common.EffectOnWindow.vkey_LCONTROL )
@@ -1591,6 +1743,9 @@ def parseShipIndication(indicationUINode: UITreeNodeWithDisplayRegion) -> ShipUI
 #         |> Dict.fromList
 #         |> Dict.get (keyText |> str.toUpper)
 
+
+def parseChatWindowStacksFromUITreeRoot(uiTreeRoot: UITreeNodeWithDisplayRegion) -> List[ChatWindowStack]:
+    pass
 # parseChatWindowStacksFromUITreeRoot : UITreeNodeWithDisplayRegion -> List ChatWindowStack
 # parseChatWindowStacksFromUITreeRoot uiTreeRoot =
 #     uiTreeRoot
@@ -1598,6 +1753,9 @@ def parseShipIndication(indicationUINode: UITreeNodeWithDisplayRegion) -> ShipUI
 #         |> List.filter (.uiNode >> .pythonObjectTypeName >> (==) "ChatWindowStack")
 #         |> List.map parseChatWindowStack
 
+
+def parseChatWindowStack(chatWindowStackUiNode: UITreeNodeWithDisplayRegion) -> ChatWindowStack:
+    pass
 # parseChatWindowStack : UITreeNodeWithDisplayRegion -> ChatWindowStack
 # parseChatWindowStack chatWindowStackUiNode =
 #     let
@@ -1611,6 +1769,9 @@ def parseShipIndication(indicationUINode: UITreeNodeWithDisplayRegion) -> ShipUI
 #     , chatWindow = chatWindowNode |> Maybe.map parseChatWindow
 #     }
 
+
+def parseChatWindow(chatWindowuiNode: UITreeNodeWithDisplayRegion) -> ChatWindow:
+    pass
 # parseChatWindow : UITreeNodeWithDisplayRegion -> ChatWindow
 # parseChatWindow chatWindowUiNode =
 #     let
@@ -1625,6 +1786,9 @@ def parseShipIndication(indicationUINode: UITreeNodeWithDisplayRegion) -> ShipUI
 #     , userlist = userlistNode |> Maybe.map parseChatWindowUserlist
 #     }
 
+
+def parseChatWindowUserlist(userListNode: UITreeNodeWithDisplayRegion) -> ChatWindowUserlist:
+    pass
 # parseChatWindowUserlist : UITreeNodeWithDisplayRegion -> ChatWindowUserlist
 # parseChatWindowUserlist userlistNode =
 #     let
@@ -1642,6 +1806,9 @@ def parseShipIndication(indicationUINode: UITreeNodeWithDisplayRegion) -> ShipUI
 #     in
 #     { uiNode = userlistNode, visibleUsers = visibleUsers, scrollControls = scrollControls }
 
+
+def parseChatUserEntry(chatUserUiNode: UITreeNodeWithDisplayRegion) -> ChatUserEntry:
+    pass
 # parseChatUserEntry : UITreeNodeWithDisplayRegion -> ChatUserEntry
 # parseChatUserEntry chatUserUiNode =
 #     let
@@ -1665,6 +1832,9 @@ def parseShipIndication(indicationUINode: UITreeNodeWithDisplayRegion) -> ShipUI
 #     , standingIconHint = standingIconHint
 #     }
 
+
+def parseAgentConversationWindowsFromUITreeRoot(uiTreeRoot: UITreeNodeWithDisplayRegion) -> List[AgentConversationWindow]:
+    pass
 # parseAgentConversationWindowsFromUITreeRoot : UITreeNodeWithDisplayRegion -> List AgentConversationWindow
 # parseAgentConversationWindowsFromUITreeRoot uiTreeRoot =
 #     uiTreeRoot
@@ -1672,11 +1842,17 @@ def parseShipIndication(indicationUINode: UITreeNodeWithDisplayRegion) -> ShipUI
 #         |> List.filter (.uiNode >> .pythonObjectTypeName >> (==) "AgentDialogueWindow")
 #         |> List.map parseAgentConversationWindow
 
+
+def parseAgentConversationWindow(windowUINode: UITreeNodeWithDisplayRegion) -> AgentConversationWindow:
+    pass
 # parseAgentConversationWindow : UITreeNodeWithDisplayRegion -> AgentConversationWindow
 # parseAgentConversationWindow windowUINode =
 #     { uiNode = windowUINode
 #     }
 
+
+def parseMarketOrdersWindowFromUITreeRoot(uiTreeRoot: UITreeNodeWithDisplayRegion) -> Optional[MarketOrdersWindow]:
+    pass
 # parseMarketOrdersWindowFromUITreeRoot : UITreeNodeWithDisplayRegion -> Maybe MarketOrdersWindow
 # parseMarketOrdersWindowFromUITreeRoot uiTreeRoot =
 #     uiTreeRoot
@@ -1685,11 +1861,17 @@ def parseShipIndication(indicationUINode: UITreeNodeWithDisplayRegion) -> ShipUI
 #         |> List.head
 #         |> Maybe.map parseMarketOrdersWindow
 
+
+def parseMarketOrdersWindow(windowUINode: UITreeNodeWithDisplayRegion) -> MarketOrdersWindow:
+    pass
 # parseMarketOrdersWindow : UITreeNodeWithDisplayRegion -> MarketOrdersWindow
 # parseMarketOrdersWindow windowUINode =
 #     { uiNode = windowUINode
 #     }
 
+
+def parseFittingWindowFromUITreeRoot(uiTreeRoot: UITreeNodeWithDisplayRegion) -> Optional[FittingWindow]:
+    pass
 # parseFittingWindowFromUITreeRoot : UITreeNodeWithDisplayRegion -> Maybe FittingWindow
 # parseFittingWindowFromUITreeRoot uiTreeRoot =
 #     uiTreeRoot
@@ -1698,11 +1880,17 @@ def parseShipIndication(indicationUINode: UITreeNodeWithDisplayRegion) -> ShipUI
 #         |> List.head
 #         |> Maybe.map parseFittingWindow
 
+
+def parseFittingWindow(windowUINode: UITreeNodeWithDisplayRegion) -> FittingWindow:
+    pass
 # parseFittingWindow : UITreeNodeWithDisplayRegion -> FittingWindow
 # parseFittingWindow windowUINode =
 #     { uiNode = windowUINode
 #     }
 
+
+def parseSurveyScanWindowFromUITreeRoot(uiTreeRoot: UITreeNodeWithDisplayRegion) -> Optional[SurveyScanWindow]:
+    pass
 # parseSurveyScanWindowFromUITreeRoot : UITreeNodeWithDisplayRegion -> Maybe SurveyScanWindow
 # parseSurveyScanWindowFromUITreeRoot uiTreeRoot =
 #     uiTreeRoot
@@ -1711,6 +1899,9 @@ def parseShipIndication(indicationUINode: UITreeNodeWithDisplayRegion) -> ShipUI
 #         |> List.head
 #         |> Maybe.map parseSurveyScanWindow
 
+
+def parseSurveyScanWindow(windowUiNode: UITreeNodeWithDisplayRegion) -> SurveyScanWindow:
+    pass
 # parseSurveyScanWindow : UITreeNodeWithDisplayRegion -> SurveyScanWindow
 # parseSurveyScanWindow windowUINode =
 #     { uiNode = windowUINode
@@ -1720,6 +1911,9 @@ def parseShipIndication(indicationUINode: UITreeNodeWithDisplayRegion) -> ShipUI
 #             |> List.filter (.uiNode >> .pythonObjectTypeName >> (==) "SurveyScanEntry")
 #     }
 
+
+def parseBookmarkLocationWindowFromUITreeRoot(uiTreeRoot: UITreeNodeWithDisplayRegion) -> Optional[BookmarkLocationWindow]:
+    pass
 # parseBookmarkLocationWindowFromUITreeRoot : UITreeNodeWithDisplayRegion -> Maybe BookmarkLocationWindow
 # parseBookmarkLocationWindowFromUITreeRoot uiTreeRoot =
 #     uiTreeRoot
@@ -1728,6 +1922,9 @@ def parseShipIndication(indicationUINode: UITreeNodeWithDisplayRegion) -> ShipUI
 #         |> List.head
 #         |> Maybe.map parseBookmarkLocationWindow
 
+
+def parseBookmarkLocationWindow(windowuinode: UITreeNodeWithDisplayRegion) -> BookmarkLocationWindow:
+    pass
 # parseBookmarkLocationWindow : UITreeNodeWithDisplayRegion -> BookmarkLocationWindow
 # parseBookmarkLocationWindow windowUINode =
 #     let
@@ -1744,6 +1941,9 @@ def parseShipIndication(indicationUINode: UITreeNodeWithDisplayRegion) -> ShipUI
 #     , cancelButton = buttonFromLabelText "cancel"
 #     }
 
+
+def parseRepairShopWindowFromUITreeRoot(uiTreeRoot: UITreeNodeWithDisplayRegion) -> Optional[RepairShopWindow]:
+    pass
 # parseRepairShopWindowFromUITreeRoot : UITreeNodeWithDisplayRegion -> Maybe RepairShopWindow
 # parseRepairShopWindowFromUITreeRoot uiTreeRoot =
 #     uiTreeRoot
@@ -1752,6 +1952,9 @@ def parseShipIndication(indicationUINode: UITreeNodeWithDisplayRegion) -> ShipUI
 #         |> List.head
 #         |> Maybe.map parseRepairShopWindow
 
+
+def uiTreeRoot(windowUINode: UITreeNodeWithDisplayRegion) -> RepairShopWindow:
+    pass
 # parseRepairShopWindow : UITreeNodeWithDisplayRegion -> RepairShopWindow
 # parseRepairShopWindow windowUINode =
 #     let
@@ -1773,6 +1976,9 @@ def parseShipIndication(indicationUINode: UITreeNodeWithDisplayRegion) -> ShipUI
 #     , repairAllButton = buttonFromLabelText "repair all"
 #     }
 
+
+def parseCharacterSheetWindowFromUITreeRoot(uiTreeRoot: UITreeNodeWithDisplayRegion) -> Optional[CharacterSheetWindow]:
+    pass
 # parseCharacterSheetWindowFromUITreeRoot : UITreeNodeWithDisplayRegion -> Maybe CharacterSheetWindow
 # parseCharacterSheetWindowFromUITreeRoot uiTreeRoot =
 #     uiTreeRoot
@@ -1781,6 +1987,9 @@ def parseShipIndication(indicationUINode: UITreeNodeWithDisplayRegion) -> ShipUI
 #         |> List.head
 #         |> Maybe.map parseCharacterSheetWindow
 
+
+def parseCharacterSheetWindow(windowUINode: UITreeNodeWithDisplayRegion) -> CharacterSheetWindow:
+    pass
 # parseCharacterSheetWindow : UITreeNodeWithDisplayRegion -> CharacterSheetWindow
 # parseCharacterSheetWindow windowUINode =
 #     let
@@ -1793,6 +2002,9 @@ def parseShipIndication(indicationUINode: UITreeNodeWithDisplayRegion) -> ShipUI
 #     , skillGroups = skillGroups
 #     }
 
+
+def parseFleetWindowFromUITreeRoot(uiTreeRoot: UITreeNodeWithDisplayRegion) -> Optional[FleetWindow]:
+    pass
 # parseFleetWindowFromUITreeRoot : UITreeNodeWithDisplayRegion -> Maybe FleetWindow
 # parseFleetWindowFromUITreeRoot uiTreeRoot =
 #     uiTreeRoot
@@ -1801,6 +2013,9 @@ def parseShipIndication(indicationUINode: UITreeNodeWithDisplayRegion) -> ShipUI
 #         |> List.head
 #         |> Maybe.map parseFleetWindow
 
+
+def parseFleetwindow(windowUINode: UITreeNodeWithDisplayRegion) -> FleetWindow:
+    pass
 # parseFleetWindow : UITreeNodeWithDisplayRegion -> FleetWindow
 # parseFleetWindow windowUINode =
 #     let
@@ -1813,6 +2028,9 @@ def parseShipIndication(indicationUINode: UITreeNodeWithDisplayRegion) -> ShipUI
 #     , fleetMembers = fleetMembers
 #     }
 
+
+def parseWatchListPanelFromUITreeRoot(uiTreeRoot: UITreeNodeWithDisplayRegion) -> Optional[WatchListPanel]:
+    pass
 # parseWatchListPanelFromUITreeRoot : UITreeNodeWithDisplayRegion -> Maybe WatchListPanel
 # parseWatchListPanelFromUITreeRoot uiTreeRoot =
 #     uiTreeRoot
@@ -1821,6 +2039,9 @@ def parseShipIndication(indicationUINode: UITreeNodeWithDisplayRegion) -> ShipUI
 #         |> List.head
 #         |> Maybe.map parseWatchListPanel
 
+
+def parseWatchListPanel(windowUINode: UITreeNodeWithDisplayRegion) -> WatchListPanel:
+    pass
 # parseWatchListPanel : UITreeNodeWithDisplayRegion -> WatchListPanel
 # parseWatchListPanel windowUINode =
 #     let
@@ -1833,6 +2054,9 @@ def parseShipIndication(indicationUINode: UITreeNodeWithDisplayRegion) -> ShipUI
 #     , entries = entries
 #     }
 
+
+def parseStandaloneBookmarkWindowFromUITreeRoot(uiTreeRoot: UITreeNodeWithDisplayRegion) -> Optional[StandaloneBookmarkWindow]:
+    pass
 # parseStandaloneBookmarkWindowFromUITreeRoot : UITreeNodeWithDisplayRegion -> Maybe StandaloneBookmarkWindow
 # parseStandaloneBookmarkWindowFromUITreeRoot uiTreeRoot =
 #     uiTreeRoot
@@ -1841,6 +2065,9 @@ def parseShipIndication(indicationUINode: UITreeNodeWithDisplayRegion) -> ShipUI
 #         |> List.head
 #         |> Maybe.map parseStandaloneBookmarkWindow
 
+
+def parseStandaloneBookmarkWindow(windowUINode: UITreeNodeWithDisplayRegion) -> StandaloneBookmarkWindow:
+    pass
 # parseStandaloneBookmarkWindow : UITreeNodeWithDisplayRegion -> StandaloneBookmarkWindow
 # parseStandaloneBookmarkWindow windowUINode =
 #     let
@@ -1853,6 +2080,9 @@ def parseShipIndication(indicationUINode: UITreeNodeWithDisplayRegion) -> ShipUI
 #     , entries = entries
 #     }
 
+
+def parseNeocomFromUITreeRoot(uiTreeRoot: UITreeNodeWithDisplayRegion) -> Optional[Neocom]:
+    pass
 # parseNeocomFromUITreeRoot : UITreeNodeWithDisplayRegion -> Maybe Neocom
 # parseNeocomFromUITreeRoot uiTreeRoot =
 #     case
@@ -1866,6 +2096,9 @@ def parseShipIndication(indicationUINode: UITreeNodeWithDisplayRegion) -> ShipUI
 #         Just uiNode ->
 #             Just (parseNeocom uiNode)
 
+
+def parseNeocom(neocomUiNode: UITreeNodeWithDisplayRegion) -> Neocom:
+    pass
 # parseNeocom : UITreeNodeWithDisplayRegion -> Neocom
 # parseNeocom neocomUiNode =
 #     let
@@ -1900,6 +2133,9 @@ def parseShipIndication(indicationUINode: UITreeNodeWithDisplayRegion) -> ShipUI
 #     , clock = clock
 #     }
 
+
+def parseNeocomClockText(clockText: str) -> Union[str, ParsedTime]:
+    pass
 # parseNeocomClockText : str -> Result str { hour : int, minute : int }
 # parseNeocomClockText clockText =
 #     case clockText |> str.split ":" of
@@ -1916,6 +2152,9 @@ def parseShipIndication(indicationUINode: UITreeNodeWithDisplayRegion) -> ShipUI
 #         _ ->
 #             Err "Expecting exactly two substrs separated by a colon (:)."
 
+
+def parseKeyActivationWindowFromUITreeRoot(uiTreeRoot: UITreeNodeWithDisplayRegion) -> Optional[KeyActivationWindow]:
+    pass
 # parseKeyActivationWindowFromUITreeRoot : UITreeNodeWithDisplayRegion -> Maybe KeyActivationWindow
 # parseKeyActivationWindowFromUITreeRoot uiTreeRoot =
 #     uiTreeRoot
@@ -1924,6 +2163,9 @@ def parseShipIndication(indicationUINode: UITreeNodeWithDisplayRegion) -> ShipUI
 #         |> List.head
 #         |> Maybe.map parseKeyActivationWindow
 
+
+def parseKeyActiationWindow(windowUiNode: UITreeNodeWithDisplayRegion) -> KeyActivationWindow:
+    pass
 # parseKeyActivationWindow : UITreeNodeWithDisplayRegion -> KeyActivationWindow
 # parseKeyActivationWindow windowUiNode =
 #     let
@@ -1937,6 +2179,9 @@ def parseShipIndication(indicationUINode: UITreeNodeWithDisplayRegion) -> ShipUI
 #     , activateButton = activateButton
 #     }
 
+
+def parseExpander(uiNode: UITreeNodeWithDisplayRegion) -> Expander:
+    pass
 # parseExpander : UITreeNodeWithDisplayRegion -> Expander
 # parseExpander uiNode =
 #     let
@@ -1957,6 +2202,9 @@ def parseShipIndication(indicationUINode: UITreeNodeWithDisplayRegion) -> ShipUI
 #     , isExpanded = isExpanded
 #     }
 
+
+def parseMessageBoxesFromUITreeRoot(uiTreeRoot: UITreeNodeWithDisplayRegion) -> List[MessageBox]:
+    pass
 # parseMessageBoxesFromUITreeRoot : UITreeNodeWithDisplayRegion -> List MessageBox
 # parseMessageBoxesFromUITreeRoot uiTreeRoot =
 #     uiTreeRoot
@@ -1964,6 +2212,9 @@ def parseShipIndication(indicationUINode: UITreeNodeWithDisplayRegion) -> ShipUI
 #         |> List.filter (.uiNode >> .pythonObjectTypeName >> (==) "MessageBox")
 #         |> List.map parseMessageBox
 
+
+def parseMessageBox(uiNode: UITreeNodeWithDisplayRegion) -> MessageBox:
+    pass
 # parseMessageBox : UITreeNodeWithDisplayRegion -> MessageBox
 # parseMessageBox uiNode =
 #     let
@@ -1987,6 +2238,9 @@ def parseShipIndication(indicationUINode: UITreeNodeWithDisplayRegion) -> ShipUI
 #     , uiNode = uiNode
 #     }
 
+
+def parseScrollControls(scrollControlsNode: UITreeNodeWithDisplayRegion) -> ScrollControls:
+    pass
 # parseScrollControls : UITreeNodeWithDisplayRegion -> ScrollControls
 # parseScrollControls scrollControlsNode =
 #     let
@@ -2000,6 +2254,9 @@ def parseShipIndication(indicationUINode: UITreeNodeWithDisplayRegion) -> ShipUI
 #     , scrollHandle = scrollHandle
 #     }
 
+
+def parseLayerAbovemainFromUITreeRoot(uiTreeRoot: UITreeNodeWithDisplayRegion) -> Optional[UITreeNodeWithDisplayRegion]:
+    pass
 # parseLayerAbovemainFromUITreeRoot : UITreeNodeWithDisplayRegion -> Maybe UITreeNodeWithDisplayRegion
 # parseLayerAbovemainFromUITreeRoot uiTreeRoot =
 #     uiTreeRoot
@@ -2007,6 +2264,11 @@ def parseShipIndication(indicationUINode: UITreeNodeWithDisplayRegion) -> ShipUI
 #         |> List.filter (.uiNode >> getNameFromDictEntries >> (==) (Just "l_abovemain"))
 #         |> List.head
 
+
+def getSubstrBetweenXmlTagsAfterMarker(marker: str) -> Callable[[str], Optional[str]]:
+    def fn(x: str) -> Optional[str]:
+        pass
+    return fn
 # getSubstrBetweenXmlTagsAfterMarker : str -> str -> Maybe str
 # getSubstrBetweenXmlTagsAfterMarker marker =
 #     str.split marker
@@ -2015,6 +2277,9 @@ def parseShipIndication(indicationUINode: UITreeNodeWithDisplayRegion) -> ShipUI
 #         >> Maybe.andThen (str.split ">" >> List.drop 1 >> List.head)
 #         >> Maybe.andThen (str.split "<" >> List.head)
 
+
+def parseNumberTruncatingAfterOptionalDecimalSeparator(numberDisplayText: str) -> Union[str, int]:
+    pass
 # parseNumberTruncatingAfterOptionalDecimalSeparator : str -> Result str int
 # parseNumberTruncatingAfterOptionalDecimalSeparator numberDisplayText =
 #     let
@@ -2042,10 +2307,16 @@ def parseShipIndication(indicationUINode: UITreeNodeWithDisplayRegion) -> ShipUI
 #         |> str.toint
 #         |> Result.fromMaybe ("Failed to parse to integer: " ++ integerText)
 
+
+def centerFromDisplayRegion(region: DisplayRegion) -> Location2d:
+    pass
 # centerFromDisplayRegion : DisplayRegion -> Location2d
 # centerFromDisplayRegion region =
 #     { x = region.x + region.width // 2, y = region.y + region.height // 2 }
 
+
+def getDisplayText(uiNode: UITreeNode) -> Optional[str]:
+    pass
 # getDisplayText : UITreeNode -> Maybe str
 # getDisplayText uiNode =
 #     [ "_setText", "_text" ]
@@ -2058,6 +2329,9 @@ def parseShipIndication(indicationUINode: UITreeNodeWithDisplayRegion) -> ShipUI
 #         |> List.sortBy (str.length >> negate)
 #         |> List.head
 
+
+def getAllContainedDisplayTexts(uiNode: UITreeNode) -> List[str]:
+    pass
 # getAllContainedDisplayTexts : UITreeNode -> List str
 # getAllContainedDisplayTexts uiNode =
 #     uiNode
@@ -2080,30 +2354,50 @@ def parseShipIndication(indicationUINode: UITreeNodeWithDisplayRegion) -> ShipUI
 #                     Nothing
 #             )
 
+
+def getNameFromDictEntries(x: UITreeNode) -> Optional[str]:
+    pass
 # getNameFromDictEntries : UITreeNode -> Maybe str
 # getNameFromDictEntries =
 #     getstrPropertyFromDictEntries "_name"
 
+
+def getHintTextFromDictEntries(x: UITreeNode) -> Optional[str]:
+    pass
 # getHintTextFromDictEntries : UITreeNode -> Maybe str
 # getHintTextFromDictEntries =
 #     getstrPropertyFromDictEntries "_hint"
 
+
+def getTexturePathFromDictEntries(x: UITreeNode) -> Optional[str]:
+    pass
 # getTexturePathFromDictEntries : UITreeNode -> Maybe str
 # getTexturePathFromDictEntries =
 #     getstrPropertyFromDictEntries "texturePath"
 
+
+def getstrPropertyFromDictEntries(dictEntryKey: str) -> Callable[[UITreeNode], Optional[str]]:
+    def fn(x: UITreeNode) -> Optional[str]:
+        pass
+    return fn
 # getstrPropertyFromDictEntries : str -> UITreeNode -> Maybe str
 # getstrPropertyFromDictEntries dictEntryKey uiNode =
 #     uiNode.dictEntriesOfinterest
 #         |> Dict.get dictEntryKey
 #         |> Maybe.andThen (Json.Decode.decodeValue Json.Decode.str >> Result.toMaybe)
 
+
+def getColorPercentFromDictEntries(x: UITreeNode) -> Optional[ColorComponents]:
+    pass
 # getColorPercentFromDictEntries : UITreeNode -> Maybe ColorComponents
 # getColorPercentFromDictEntries =
 #     .dictEntriesOfinterest
 #         >> Dict.get "_color"
 #         >> Maybe.andThen (Json.Decode.decodeValue jsonDecodeColorPercent >> Result.toMaybe)
 
+
+def jsonDecodeColorPercent(x):
+    pass
 # jsonDecodeColorPercent : Json.Decode.Decoder ColorComponents
 # jsonDecodeColorPercent =
 #     Json.Decode.map4 ColorComponents
@@ -2112,12 +2406,18 @@ def parseShipIndication(indicationUINode: UITreeNodeWithDisplayRegion) -> ShipUI
 #         (Json.Decode.field "gPercent" jsonDecodeintFromintOrstr)
 #         (Json.Decode.field "bPercent" jsonDecodeintFromintOrstr)
 
+
+def getRotationFloatFromDictEntries(x: UITreeNode) -> Optional[float]:
+    pass
 # getRotationFloatFromDictEntries : UITreeNode -> Maybe Float
 # getRotationFloatFromDictEntries =
 #     .dictEntriesOfinterest
 #         >> Dict.get "_rotation"
 #         >> Maybe.andThen (Json.Decode.decodeValue Json.Decode.float >> Result.toMaybe)
 
+
+def jsonDecodeintFromintOrstr(x):
+    pass
 # jsonDecodeintFromintOrstr : Json.Decode.Decoder int
 # jsonDecodeintFromintOrstr =
 #     Json.Decode.oneOf
@@ -2133,6 +2433,9 @@ def parseShipIndication(indicationUINode: UITreeNodeWithDisplayRegion) -> ShipUI
 #                 )
 #         ]
 
+
+def getHorizontalOffsetFromParentAndWidth(uiNode: UITreeNode) -> Optional[OffsetWidth]:
+    pass
 # getHorizontalOffsetFromParentAndWidth : UITreeNode -> Maybe { offset : int, width : int }
 # getHorizontalOffsetFromParentAndWidth uiNode =
 #     let
@@ -2148,6 +2451,9 @@ def parseShipIndication(indicationUINode: UITreeNodeWithDisplayRegion) -> ShipUI
 #         _ ->
 #             Nothing
 
+
+def areaFromDisplayRegion(region: DisplayRegion) -> Optional[int]:
+    pass
 # areaFromDisplayRegion : DisplayRegion -> Maybe int
 # areaFromDisplayRegion region =
 #     if region.width < 0 || region.height < 0 then
@@ -2155,6 +2461,9 @@ def parseShipIndication(indicationUINode: UITreeNodeWithDisplayRegion) -> ShipUI
 #     else
 #         Just (region.width * region.height)
 
+
+def getVerticalOffsetFromParent(x: UITreeNode) -> Optional[int]:
+    pass
 # getVerticalOffsetFromParent : UITreeNode -> Maybe int
 # getVerticalOffsetFromParent =
 #     .dictEntriesOfinterest
@@ -2162,6 +2471,13 @@ def parseShipIndication(indicationUINode: UITreeNodeWithDisplayRegion) -> ShipUI
 #         >> Maybe.andThen (Json.Decode.decodeValue Json.Decode.float >> Result.toMaybe)
 #         >> Maybe.map round
 
+
+def getMostPopulousDescendantMatchingPredicate(predicate: Callable[[UITreeNode], bool]) -> Callable:
+    def fnA(x) -> Callable[[], Optional[UITreeNode]]:
+        def fnB() -> Optional[UITreeNode]:
+            pass
+        return fnB(x)
+    return fnA
 # getMostPopulousDescendantMatchingPredicate : (UITreeNode -> bool) -> UITreeNode -> Maybe UITreeNode
 # getMostPopulousDescendantMatchingPredicate predicate parent =
 #     listDescendantsInUITreeNode parent
@@ -2170,12 +2486,18 @@ def parseShipIndication(indicationUINode: UITreeNodeWithDisplayRegion) -> ShipUI
 #         |> List.reverse
 #         |> List.head
 
+
+def listDescendantsWithDisplayRegion(parent: UITreeNodeWithDisplayRegion) -> List[UITreeNodeWithDisplayRegion]:
+    pass
 # listDescendantsWithDisplayRegion : UITreeNodeWithDisplayRegion -> List UITreeNodeWithDisplayRegion
 # listDescendantsWithDisplayRegion parent =
 #     parent
 #         |> listChildrenWithDisplayRegion
 #         |> List.concatMap (\child -> child :: listDescendantsWithDisplayRegion child)
 
+
+def listChildrenWithDisplayRegion(parent: UITreeNodeWithDisplayRegion) -> List[UITreeNodeWithDisplayRegion]:
+    pass
 # listChildrenWithDisplayRegion : UITreeNodeWithDisplayRegion -> List UITreeNodeWithDisplayRegion
 # listChildrenWithDisplayRegion parent =
 #     parent.children
