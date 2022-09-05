@@ -16,6 +16,8 @@
 
 from classes import *
 from typing import Callable
+from helpers import *
+from copy import copy
 
 
 def parseUITreeWithDisplayRegionFromUITree(uiTree: UITreeNode) -> UITreeNodeWithDisplayRegion:
@@ -47,20 +49,24 @@ def parseUserinterfaceFromUITree(uiTree: UITreeNodeWithDisplayRegion) -> ParsedU
     x.dronesWindow = parseDronesWindowFromUITreeRoot(uiTree)
     x.fittingWindow = parseFittingWindowFromUITreeRoot(uiTree)
     x.probeScannerWindow = parseProbeScannerWindowFromUITreeRoot(uiTree)
-    x.directionalScannerWindow = parseDirectionalScannerWindowFromUITreeRoot(uiTree)
+    x.directionalScannerWindow = parseDirectionalScannerWindowFromUITreeRoot(
+        uiTree)
     x.stationWindow = parseStationWindowFromUITreeRoot(uiTree)
     x.inventoryWindows = parseInventoryWindowsFromUITreeRoot(uiTree)
     x.moduleButtonTooltip = parseModuleButtonTooltipFromUITreeRoot(uiTree)
     x.chatWindowStacks = parseChatWindowStacksFromUITreeRoot(uiTree)
-    x.agentConversationWindows = parseAgentConversationWindowsFromUITreeRoot(uiTree)
+    x.agentConversationWindows = parseAgentConversationWindowsFromUITreeRoot(
+        uiTree)
     x.marketOrdersWindow = parseMarketOrdersWindowFromUITreeRoot(uiTree)
     x.surveyScanWindow = parseSurveyScanWindowFromUITreeRoot(uiTree)
-    x.bookmarkLocationWindow = parseBookmarkLocationWindowFromUITreeRoot(uiTree)
+    x.bookmarkLocationWindow = parseBookmarkLocationWindowFromUITreeRoot(
+        uiTree)
     x.repairShopWindow = parseRepairShopWindowFromUITreeRoot(uiTree)
     x.characterSheetWindow = parseCharacterSheetWindowFromUITreeRoot(uiTree)
     x.fleetWindow = parseFleetWindowFromUITreeRoot(uiTree)
     x.watchListPanel = parseWatchListPanelFromUITreeRoot(uiTree)
-    x.standaloneBookmarkWindow = parseStandaloneBookmarkWindowFromUITreeRoot(uiTree)
+    x.standaloneBookmarkWindow = parseStandaloneBookmarkWindowFromUITreeRoot(
+        uiTree)
     x.neocom = parseNeocomFromUITreeRoot(uiTree)
     x.messageBoxes = parseMessageBoxesFromUITreeRoot(uiTree)
     x.layerAbovemain = parseLayerAbovemainFromUITreeRoot(uiTree)
@@ -100,12 +106,25 @@ def parseUserinterfaceFromUITree(uiTree: UITreeNodeWithDisplayRegion) -> ParsedU
 #     , keyActivationWindow = parseKeyActivationWindowFromUITreeRoot uiTree
 #     }
 
+def unwrapUITreeNodeChild(child: UITreeNodeChild) -> UITreeNode:
+    pass
+    # if child is UITreeNodeChild:
+    #     return child.
 
-def asUITreeNodeWithDisplayRegion(selfDisplayRegion: DisplayRegion, totalDisplayRegion: DisplayRegion) -> Callable[[UITreeNode], UITreeNodeWithDisplayRegion]:
+# unwrapUITreeNodeChild : UITreeNodeChild -> UITreeNode
+# unwrapUITreeNodeChild child =
+#     case child of
+#         UITreeNodeChild node ->
+#             node
 
-    def myFunc(node: UITreeNode) -> UITreeNodeWithDisplayRegion:
-        pass
-    return myFunc
+
+def asUITreeNodeWithDisplayRegion(selfDisplayRegion: DisplayRegion, totalDisplayRegion: DisplayRegion, uiNode: UITreeNode) -> UITreeNodeWithDisplayRegion:
+    x = UITreeNodeWithDisplayRegion()
+    x.uiNode = uiNode
+    x.children = []  # TODO: for all children do `unwrapUITreeNodeChild`
+    x.selfDisplayRegion = selfDisplayRegion
+    x.totalDisplayRegion = totalDisplayRegion
+    return x
 
 # asUITreeNodeWithDisplayRegion : { selfDisplayRegion : DisplayRegion, totalDisplayRegion : DisplayRegion } -> UITreeNode -> UITreeNodeWithDisplayRegion
 # asUITreeNodeWithDisplayRegion { selfDisplayRegion, totalDisplayRegion } uiNode =
@@ -116,11 +135,15 @@ def asUITreeNodeWithDisplayRegion(selfDisplayRegion: DisplayRegion, totalDisplay
 #     }
 
 
-def asUITreeNodeWithInheritedOffset(rawNode: NamedTuple(x=int, y=int)) -> Callable[[UITreeNode], UITreeNodeWithDisplayRegion]:
+def asUITreeNodeWithInheritedOffset(inheritedOffset: NamedTuple(x=int, y=int), rawNode: UITreeNode) -> UITreeNodeWithDisplayRegion:
+    selfRegion = getDisplayRegionFromDictEntries(rawNode)
+    if selfRegion is None:
+        return ChildOfNodeWithDisplayRegion.ChildWithoutRegion(rawNode)
+    a = copy(selfRegion)
+    a.x += inheritedOffset.x
+    a.y += inheritedOffset.y
+    return asUITreeNodeWithDisplayRegion(selfRegion, a, rawNode)
 
-    def myFunc(node: UITreeNode) -> UITreeNodeWithDisplayRegion:
-        pass
-    return myFunc
 
 # asUITreeNodeWithInheritedOffset : { x : int, y : int } -> UITreeNode -> ChildOfNodeWithDisplayRegion
 # asUITreeNodeWithInheritedOffset inheritedOffset rawNode =
@@ -598,11 +621,24 @@ def parseShipUICapacitorFromUINode(capacitorUINode: UITreeNodeWithDisplayRegion)
 #     }
 
 
-def groupShipUIModulesintoRows(capacitor: ShipUICapacitor) -> Callable[[List[ShipUIModuleButton]], ModuleRows]:
+def groupShipUIModulesintoRows(capacitor: ShipUICapacitor, modules: List[ShipUIModuleButton]) -> ModuleRows:
 
-    def myFunc(modules: List[ShipUIModuleButton]) -> ModuleRows:
-        pass
-    return myFunc
+    verticalDistanceThreshold = 20
+
+    def verticalCenterOfUINode(uiNode: UITreeNodeWithDisplayRegion) -> int:
+        return uiNode.totalDisplayRegion.y + uiNode.totalDisplayRegion.height / 2
+    capacitorVerticalCenter = verticalCenterOfUINode(capacitor.uiNode)
+
+    def foldFunction(shipModule: ShipUIModuleButton, previousRows: ModuleRows):
+        if verticalCenterOfUINode(shipModule.uiNode) < (capacitorVerticalCenter - verticalDistanceThreshold):
+            previousRows.top.append(shipModule)
+        elif verticalCenterOfUINode(shipModule.uiNode) > (capacitorVerticalCenter + verticalDistanceThreshold):
+            previousRows.bottom.append(shipModule)
+        else:
+            previousRows.middle.append(shipModule)
+    _modules = ModuleRows([], [], [])
+    foldr(foldFunction, _modules, modules)
+    return _modules
 # groupShipUIModulesintoRows :
 #     ShipUICapacitor
 #     -> List ShipUIModuleButton

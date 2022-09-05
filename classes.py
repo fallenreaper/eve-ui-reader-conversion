@@ -11,10 +11,22 @@ except:
     CUSTOMKEYCODE = None
 
 
+class UITreeNodeChild(Enum):
+    UITreeNodeChild = None  # UITreeNode. # Reinit after to help class defs.
+
+
 class UITreeNode(object):
     def __init__(self, **kwargs):
         self.__dict__.update(kwargs)
-    pass
+    origionalJson: Any
+    pythonObjectAddress: str
+    pythonObjectTypeName: str
+    dictEntriesOfInterest: Dict[str, Any]
+    children: Optional[List[UITreeNodeChild]]
+
+
+class UITreeNodeChild(Enum):
+    UITreeNodeChild = UITreeNode
 
 
 class DisplayRegion(object):
@@ -27,7 +39,8 @@ class DisplayRegion(object):
 
 
 class ChildOfNodeWithDisplayRegion(Enum):
-    ChildWithRegion = None  # UITreeNodeWithDisplayRegion
+    # UITreeNodeWithDisplayRegion # Reinit after to help class defs.
+    ChildWithRegion = None
     ChildWithoutRegion = UITreeNode
 
 
@@ -38,6 +51,11 @@ class UITreeNodeWithDisplayRegion(object):
     children: Optional[List[ChildOfNodeWithDisplayRegion]]
     selfDisplayRegion: DisplayRegion
     totalDisplayRegion: DisplayRegion
+
+
+class ChildOfNodeWithDisplayRegion(Enum):
+    ChildWithRegion = UITreeNodeWithDisplayRegion
+    ChildWithoutRegion = UITreeNode
 
 
 class Location2d:
@@ -508,8 +526,8 @@ class ParsedTime(NamedTuple):
 
 
 class OffsetWidth(NamedTuple):
-  offset: int
-  width: int
+    offset: int
+    width: int
 
 
 class NeocomClock(object):
@@ -613,4 +631,3 @@ class ParsedUserInterface(object):
     messageBoxes: List[MessageBox]
     layerAbovemain: Optional[UITreeNodeWithDisplayRegion]
     keyActivationWindow: Optional[KeyActivationWindow]
-
