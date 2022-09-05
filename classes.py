@@ -11,11 +11,15 @@ except:
     CUSTOMKEYCODE = None
 
 
-class UITreeNode:
+class UITreeNode(object):
+    def __init__(self, **kwargs):
+        self.__dict__.update(kwargs)
     pass
 
 
-class DisplayRegion:
+class DisplayRegion(object):
+    def __init__(self, **kwargs):
+        self.__dict__.update(kwargs)
     x: int
     y: int
     width: int
@@ -27,7 +31,9 @@ class ChildOfNodeWithDisplayRegion(Enum):
     ChildWithoutRegion = UITreeNode
 
 
-class UITreeNodeWithDisplayRegion:
+class UITreeNodeWithDisplayRegion(object):
+    def __init__(self, **kwargs):
+        self.__dict__.update(kwargs)
     uiNode: UITreeNode
     children: Optional[List[ChildOfNodeWithDisplayRegion]]
     selfDisplayRegion: DisplayRegion
@@ -39,24 +45,32 @@ class Location2d:
     y: int
 
 
-class ColorComponents:
+class ColorComponents(object):
+    def __init__(self, **kwargs):
+        self.__dict__.update(kwargs)
     a: int
     r: int
     g: int
     b: int
 
 
-class ContextMenuEntry:
+class ContextMenuEntry(object):
+    def __init__(self, **kwargs):
+        self.__dict__.update(kwargs)
     uiNode: UITreeNodeWithDisplayRegion
     text: str
 
 
-class ContextMenu:
+class ContextMenu(object):
+    def __init__(self, **kwargs):
+        self.__dict__.update(kwargs)
     uiNode: UITreeNodeWithDisplayRegion
     entries: List[ContextMenuEntry]
 
 
-class ShipUIModuleButton:
+class ShipUIModuleButton(object):
+    def __init__(self, **kwargs):
+        self.__dict__.update(kwargs)
     uiNode: UITreeNodeWithDisplayRegion
     slotUINode: UITreeNodeWithDisplayRegion
     isActive: Optional[bool]
@@ -70,35 +84,47 @@ class ModuleRows(NamedTuple):
     bottom: List[ShipUIModuleButton]
 
 
-class Hitpoints:
+class Hitpoints(object):
+    def __init__(self, **kwargs):
+        self.__dict__.update(kwargs)
     structure: int
     armor: int
     shield: int
 
 
-class SquadronAbilityIcon:
+class SquadronAbilityIcon(object):
+    def __init__(self, **kwargs):
+        self.__dict__.update(kwargs)
     uiNode: UITreeNodeWithDisplayRegion
     quantity: Optional[int]
     ramp_active: Optional[bool]
 
 
-class SquadronUI:
+class SquadronUI(object):
+    def __init__(self, **kwargs):
+        self.__dict__.update(kwargs)
     uiNode: UITreeNodeWithDisplayRegion
     abilities: List[SquadronAbilityIcon]
     actionLabel: Optional[UITreeNodeWithDisplayRegion]
 
 
-class SquadronsUI:
+class SquadronsUI(object):
+    def __init__(self, **kwargs):
+        self.__dict__.update(kwargs)
     uiNode: UITreeNodeWithDisplayRegion
     squadrons: List[SquadronUI]
 
 
-class ShipUICapacitorPmark:
+class ShipUICapacitorPmark(object):
+    def __init__(self, **kwargs):
+        self.__dict__.update(kwargs)
     uiNode: UITreeNodeWithDisplayRegion
     colorPercent: Optional[ColorComponents]
 
 
-class ShipUICapacitor:
+class ShipUICapacitor(object):
+    def __init__(self, **kwargs):
+        self.__dict__.update(kwargs)
     uiNode: UITreeNodeWithDisplayRegion
     pmarks: List[ShipUICapacitorPmark]
     levelFromPmarksPercent: Optional[int]
@@ -111,12 +137,16 @@ class ShipManeuverType(Enum):
     ManeuverApproach = 3
 
 
-class ShipUIIndication:
+class ShipUIIndication(object):
+    def __init__(self, **kwargs):
+        self.__dict__.update(kwargs)
     uiNode: UITreeNodeWithDisplayRegion
     maneuverType: Optional[ShipManeuverType]
 
 
-class ShipUI:
+class ShipUI(object):
+    def __init__(self, **kwargs):
+        self.__dict__.update(kwargs)
     uiNode: UITreeNodeWithDisplayRegion
     capacitor: ShipUICapacitor
     hitpointsPercent: Hitpoints
@@ -130,7 +160,9 @@ class ShipUI:
     maxSpeedButton: Optional[UITreeNodeWithDisplayRegion]
 
 
-class InfoPanelIcons:
+class InfoPanelIcons(object):
+    def __init__(self, **kwargs):
+        self.__dict__.update(kwargs)
     uiNode: UITreeNodeWithDisplayRegion
     search: Optional[UITreeNodeWithDisplayRegion]
     locationInfo: Optional[UITreeNodeWithDisplayRegion]
@@ -139,20 +171,28 @@ class InfoPanelIcons:
     dailyChallenge: Optional[UITreeNodeWithDisplayRegion]
 
 
-class InfoPanelRouteRouteElementMarker:
+class InfoPanelRouteRouteElementMarker(object):
+    def __init__(self, **kwargs):
+        self.__dict__.update(kwargs)
     uiNode: UITreeNodeWithDisplayRegion
 
 
-class InfoPanelRoute:
+class InfoPanelRoute(object):
+    def __init__(self, **kwargs):
+        self.__dict__.update(kwargs)
     uiNode: UITreeNodeWithDisplayRegion
     routeElementMarker: List[InfoPanelRouteRouteElementMarker]
 
 
-class InfoPanelLocationInfoExpandedContent:
+class InfoPanelLocationInfoExpandedContent(object):
+    def __init__(self, **kwargs):
+        self.__dict__.update(kwargs)
     currentStationName: Optional[str]
 
 
-class InfoPanelLocationInfo:
+class InfoPanelLocationInfo(object):
+    def __init__(self, **kwargs):
+        self.__dict__.update(kwargs)
     uiNode: UITreeNodeWithDisplayRegion
     listSurroundingsButton: UITreeNodeWithDisplayRegion
     currentSolarSystemName: Optional[str]
@@ -160,16 +200,22 @@ class InfoPanelLocationInfo:
     expandedContent: Optional[InfoPanelLocationInfoExpandedContent]
 
 
-class InfoPanelAgentMissionsEntry:
+class InfoPanelAgentMissionsEntry(object):
+    def __init__(self, **kwargs):
+        self.__dict__.update(kwargs)
     uiNode: UITreeNodeWithDisplayRegion
 
 
-class InfoPanelAgentMissions:
+class InfoPanelAgentMissions(object):
+    def __init__(self, **kwargs):
+        self.__dict__.update(kwargs)
     uiNode: UITreeNodeWithDisplayRegion
     entries: List[InfoPanelAgentMissionsEntry]
 
 
-class InfoPanelContainer:
+class InfoPanelContainer(object):
+    def __init__(self, **kwargs):
+        self.__dict__.update(kwargs)
     uiNode: UITreeNodeWithDisplayRegion
     icons: Optional[InfoPanelIcons]
     infoPanelLocationInfo: Optional[InfoPanelLocationInfo]
@@ -177,7 +223,9 @@ class InfoPanelContainer:
     infoPanelAgentMissions: Optional[InfoPanelAgentMissions]
 
 
-class Target:
+class Target(object):
+    def __init__(self, **kwargs):
+        self.__dict__.update(kwargs)
     uiNode: UITreeNodeWithDisplayRegion
     barAndImageCont: Optional[UITreeNodeWithDisplayRegion]
     textsTopToBottom: List[str]
@@ -186,14 +234,18 @@ class Target:
     assignedIcons: List[UITreeNodeWithDisplayRegion]
 
 
-class OverviewWindowEntryCommonIndications:
+class OverviewWindowEntryCommonIndications(object):
+    def __init__(self, **kwargs):
+        self.__dict__.update(kwargs)
     targeting: bool
     targetedByMe: bool
     isJammingMe: bool
     isWarpDisruptingMe: bool
 
 
-class OverviewWindowEntry:
+class OverviewWindowEntry(object):
+    def __init__(self, **kwargs):
+        self.__dict__.update(kwargs)
     uiNode: UITreeNodeWithDisplayRegion
     textsLeftToRight: List[str]
     cellsTexts: Dict[str, str]
@@ -209,37 +261,51 @@ class OverviewWindowEntry:
     commonIndications: OverviewWindowEntryCommonIndications
 
 
-class ScrollControls:
+class ScrollControls(object):
+    def __init__(self, **kwargs):
+        self.__dict__.update(kwargs)
     uiNode: UITreeNodeWithDisplayRegion
     scrollHandle: Optional[UITreeNodeWithDisplayRegion]
 
 
-class OverviewWindow:
+class OverviewWindow(object):
+    def __init__(self, **kwargs):
+        self.__dict__.update(kwargs)
     uiNode: UITreeNodeWithDisplayRegion
     entriesHeaders: List[Union[str, UITreeNodeWithDisplayRegion]]
     entries: List[OverviewWindowEntry]
     scrollControls: Optional[ScrollControls]
 
 
-class SelectedItemWindow:
+class SelectedItemWindow(object):
+    def __init__(self, **kwargs):
+        self.__dict__.update(kwargs)
     uiNode: UITreeNodeWithDisplayRegion
     orbitButton: Optional[UITreeNodeWithDisplayRegion]
 
 
-class FittingWindow:
+class FittingWindow(object):
+    def __init__(self, **kwargs):
+        self.__dict__.update(kwargs)
     uiNode: UITreeNodeWithDisplayRegion
 
 
-class MarketOrdersWindow:
+class MarketOrdersWindow(object):
+    def __init__(self, **kwargs):
+        self.__dict__.update(kwargs)
     uiNode: UITreeNodeWithDisplayRegion
 
 
-class SurveyScanWindow:
+class SurveyScanWindow(object):
+    def __init__(self, **kwargs):
+        self.__dict__.update(kwargs)
     uiNode: UITreeNodeWithDisplayRegion
     scanEntries: List[UITreeNodeWithDisplayRegion]
 
 
-class RepairShopWindow:
+class RepairShopWindow(object):
+    def __init__(self, **kwargs):
+        self.__dict__.update(kwargs)
     uiNode: UITreeNodeWithDisplayRegion
     items: List[UITreeNodeWithDisplayRegion]
     repairItemButton: Optional[UITreeNodeWithDisplayRegion]
@@ -247,30 +313,40 @@ class RepairShopWindow:
     repairAllButton: Optional[UITreeNodeWithDisplayRegion]
 
 
-class CharacterSheetWindow:
+class CharacterSheetWindow(object):
+    def __init__(self, **kwargs):
+        self.__dict__.update(kwargs)
     uiNode: UITreeNodeWithDisplayRegion
     skillGroups: List[UITreeNodeWithDisplayRegion]
 
 
-class Expander:
+class Expander(object):
+    def __init__(self, **kwargs):
+        self.__dict__.update(kwargs)
     uiNode: UITreeNodeWithDisplayRegion
     texturePath: Optional[str]
     isExpanded: Optional[bool]
 
 
-class DronesWindowDroneGroupHeader:
+class DronesWindowDroneGroupHeader(object):
+    def __init__(self, **kwargs):
+        self.__dict__.update(kwargs)
     uiNode: UITreeNodeWithDisplayRegion
     maintext: Optional[str]
     expander: Expander
     quantityFromTitle: Optional[int]
 
 
-class DronesWindowEntryGroupStructure:
+class DronesWindowEntryGroupStructure(object):
+    def __init__(self, **kwargs):
+        self.__dict__.update(kwargs)
     header: DronesWindowDroneGroupHeader
     children: List[Any]  # DronesWindowEntry
 
 
-class DronesWindowEntryDroneStructure:
+class DronesWindowEntryDroneStructure(object):
+    def __init__(self, **kwargs):
+        self.__dict__.update(kwargs)
     uiNode: UITreeNodeWithDisplayRegion
     maintext: Optional[str]
     hitpointsPercent: Optional[Hitpoints]
@@ -281,42 +357,56 @@ class DronesWindowEntry(Enum):
     DronesWindowEntryDrone = DronesWindowEntryDroneStructure
 
 
-class DronesWindow:
+class DronesWindow(object):
+    def __init__(self, **kwargs):
+        self.__dict__.update(kwargs)
     uiNode: UITreeNodeWithDisplayRegion
     droneGroups: List[DronesWindowEntryGroupStructure]
     droneGroupInBay: Optional[DronesWindowEntryGroupStructure]
     droneGroupInLocalSpace: Optional[DronesWindowEntryGroupStructure]
 
 
-class ProbeScanResult:
+class ProbeScanResult(object):
+    def __init__(self, **kwargs):
+        self.__dict__.update(kwargs)
     uiNode: UITreeNodeWithDisplayRegion
     textsLeftToRight: List[str]
     cellsTexts: Dict[str, str]
     warpButton: Optional[UITreeNodeWithDisplayRegion]
 
 
-class ProbeScannerWindow:
+class ProbeScannerWindow(object):
+    def __init__(self, **kwargs):
+        self.__dict__.update(kwargs)
     uiNode: UITreeNodeWithDisplayRegion
     scanResults: List[ProbeScanResult]
 
 
-class DirectionalScannerWindow:
+class DirectionalScannerWindow(object):
+    def __init__(self, **kwargs):
+        self.__dict__.update(kwargs)
     uiNode: UITreeNodeWithDisplayRegion
     scrollNode: Optional[UITreeNodeWithDisplayRegion]
     scanResults: List[UITreeNodeWithDisplayRegion]
 
 
-class StationWindow:
+class StationWindow(object):
+    def __init__(self, **kwargs):
+        self.__dict__.update(kwargs)
     uiNode: UITreeNodeWithDisplayRegion
     undockButton: Optional[UITreeNodeWithDisplayRegion]
     abortUndockButton: Optional[UITreeNodeWithDisplayRegion]
 
 
-class InventoryWindowLeftTreeEntryChild:
+class InventoryWindowLeftTreeEntryChild(object):
+    def __init__(self, **kwargs):
+        self.__dict__.update(kwargs)
     InventoryWindowLeftTreeEntryChild: Any  # InventoryWindowLeftTreeEntry
 
 
-class InventoryWindowLeftTreeEntry:
+class InventoryWindowLeftTreeEntry(object):
+    def __init__(self, **kwargs):
+        self.__dict__.update(kwargs)
     uiNode: UITreeNodeWithDisplayRegion
     toggleBtn: Optional[UITreeNodeWithDisplayRegion]
     selectRegion: Optional[UITreeNodeWithDisplayRegion]
@@ -324,13 +414,17 @@ class InventoryWindowLeftTreeEntry:
     children: List[InventoryWindowLeftTreeEntryChild]
 
 
-class InventoryWindowCapacityGauge:
+class InventoryWindowCapacityGauge(object):
+    def __init__(self, **kwargs):
+        self.__dict__.update(kwargs)
     used: int
     maximum: Optional[int]
     selected: Optional[int]
 
 
-class Items:
+class Items(object):
+    def __init__(self, **kwargs):
+        self.__dict__.update(kwargs)
     items: List[UITreeNodeWithDisplayRegion]
 
 
@@ -339,13 +433,17 @@ class InventoryItemsView(Enum):
     InventoryItemsNotListView = Items
 
 
-class Inventory:
+class Inventory(object):
+    def __init__(self, **kwargs):
+        self.__dict__.update(kwargs)
     uiNode: UITreeNodeWithDisplayRegion
     itemsView: Optional[InventoryItemsView]
     scrollControls: Optional[ScrollControls]
 
 
-class InventoryWindow:
+class InventoryWindow(object):
+    def __init__(self, **kwargs):
+        self.__dict__.update(kwargs)
     uiNode: UITreeNodeWithDisplayRegion
     leftTreeEntries: List[InventoryWindowLeftTreeEntry]
     subCaptionLabelText: Optional[str]
@@ -355,7 +453,9 @@ class InventoryWindow:
     buttonToSwitchToListView: Optional[UITreeNodeWithDisplayRegion]
 
 
-class ChatUserEntry:
+class ChatUserEntry(object):
+    def __init__(self, **kwargs):
+        self.__dict__.update(kwargs)
     uiNode: UITreeNodeWithDisplayRegion
     name: Optional[str]
     standingIconHint: Optional[str]
@@ -366,19 +466,25 @@ class ShortCut(NamedTuple):
     parseResult: Optional[Union[str, List[CUSTOMKEYCODE]]]
 
 
-class ChatWindowUserlist:
+class ChatWindowUserlist(object):
+    def __init__(self, **kwargs):
+        self.__dict__.update(kwargs)
     uiNode: UITreeNodeWithDisplayRegion
     visibleUsers: List[ChatUserEntry]
     scrollControls: Optional[ScrollControls]
 
 
-class ChatWindow:
+class ChatWindow(object):
+    def __init__(self, **kwargs):
+        self.__dict__.update(kwargs)
     uiNode: UITreeNodeWithDisplayRegion
     name: Optional[str]
     user: Optional[ChatWindowUserlist]
 
 
-class ChatWindowStack:
+class ChatWindowStack(object):
+    def __init__(self, **kwargs):
+        self.__dict__.update(kwargs)
     uiNode: UITreeNodeWithDisplayRegion
     chatWindow: Optional[ChatWindow]
 
@@ -388,34 +494,49 @@ class OptimalRange(NamedTuple):
     inMeteres: Union[str, int]
 
 
-class ModuleButtonTooltip:
+class ModuleButtonTooltip(object):
+    def __init__(self, **kwargs):
+        self.__dict__.update(kwargs)
     uiNode: UITreeNodeWithDisplayRegion
     shortcut: Optional[ShortCut]
     optimalRange: Optional[OptimalRange]
 
 
-class ParsedText(NamedTuple):
+class ParsedTime(NamedTuple):
     hour: int
     minute: int
 
 
-class NeocomClock:
+class OffsetWidth(NamedTuple):
+  offset: int
+  width: int
+
+
+class NeocomClock(object):
+    def __init__(self, **kwargs):
+        self.__dict__.update(kwargs)
     uiNode: UITreeNodeWithDisplayRegion
     text: str
-    parsedText: Union[str, ParsedText]
+    ParsedTime: Union[str, ParsedTime]
 
 
-class Neocom:
+class Neocom(object):
+    def __init__(self, **kwargs):
+        self.__dict__.update(kwargs)
     uiNode: UITreeNodeWithDisplayRegion
     iconInventory: Optional[UITreeNodeWithDisplayRegion]
     clock: Optional[NeocomClock]
 
 
-class AgentConversationWindow:
+class AgentConversationWindow(object):
+    def __init__(self, **kwargs):
+        self.__dict__.update(kwargs)
     uiNode: UITreeNodeWithDisplayRegion
 
 
-class BookmarkLocationWindow:
+class BookmarkLocationWindow(object):
+    def __init__(self, **kwargs):
+        self.__dict__.update(kwargs)
     uiNode: UITreeNodeWithDisplayRegion
     submitButton: Optional[UITreeNodeWithDisplayRegion]
     cancelButton: Optional[UITreeNodeWithDisplayRegion]
@@ -426,32 +547,44 @@ class ButtonTuples(NamedTuple):
     maintext: Optional[str]
 
 
-class MessageBox:
+class MessageBox(object):
+    def __init__(self, **kwargs):
+        self.__dict__.update(kwargs)
     uiNode: UITreeNodeWithDisplayRegion
     buttons: List[ButtonTuples]
 
 
-class FleetWindow:
+class FleetWindow(object):
+    def __init__(self, **kwargs):
+        self.__dict__.update(kwargs)
     uiNode: UITreeNodeWithDisplayRegion
     fleetMembers: List[UITreeNodeWithDisplayRegion]
 
 
-class WatchListPanel:
+class WatchListPanel(object):
+    def __init__(self, **kwargs):
+        self.__dict__.update(kwargs)
     uiNode: UITreeNodeWithDisplayRegion
     entries: List[UITreeNodeWithDisplayRegion]
 
 
-class StandaloneBookmarkWindow:
+class StandaloneBookmarkWindow(object):
+    def __init__(self, **kwargs):
+        self.__dict__.update(kwargs)
     uiNode: UITreeNodeWithDisplayRegion
     entries: List[UITreeNodeWithDisplayRegion]
 
 
-class KeyActivationWindow:
+class KeyActivationWindow(object):
+    def __init__(self, **kwargs):
+        self.__dict__.update(kwargs)
     uiNode: UITreeNodeWithDisplayRegion
     activateButton: Optional[UITreeNodeWithDisplayRegion]
 
 
-class ParsedUserinterface:
+class ParsedUserInterface(object):
+    def __init__(self, **kwargs):
+        self.__dict__.update(kwargs)
     uiTree: UITreeNodeWithDisplayRegion
     contextMenus: List[ContextMenu]
     shipUI: Optional[ShipUI]
