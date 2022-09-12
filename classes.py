@@ -11,13 +11,20 @@ except:
     CUSTOMKEYCODE = None
 
 
-class UITreeNodeChild(Enum):
-    UITreeNodeChild = None  # UITreeNode. # Reinit after to help class defs.
+UITreeNodeChild = None  # UITreeNode. # Reinit after to help class defs.
 
 
 class UITreeNode(object):
     def __init__(self, **kwargs):
         self.__dict__.update(kwargs)
+
+    @staticmethod
+    def fromJson(data: Dict) -> object:
+        x = UITreeNode(**data)
+        _c = data.get("children")
+        x.children = None if _c is None else [UITreeNodeChild.fromJson(x) for x in _c]
+        return x
+
     origionalJson: Any
     pythonObjectAddress: str
     pythonObjectTypeName: str
@@ -25,8 +32,8 @@ class UITreeNode(object):
     children: Optional[List[UITreeNodeChild]]
 
 
-class UITreeNodeChild(Enum):
-    UITreeNodeChild = UITreeNode
+# class UITreeNodeChild(Enum):
+UITreeNodeChild = UITreeNode
 
 
 class DisplayRegion(object):
@@ -38,24 +45,35 @@ class DisplayRegion(object):
     height: int
 
 
-class ChildOfNodeWithDisplayRegion(Enum):
-    # UITreeNodeWithDisplayRegion # Reinit after to help class defs.
-    ChildWithRegion = None
-    ChildWithoutRegion = UITreeNode
+# class ChildOfNodeWithDisplayRegion(Enum):
+#     # UITreeNodeWithDisplayRegion # Reinit after to help class defs.
+
 
 
 class UITreeNodeWithDisplayRegion(object):
     def __init__(self, **kwargs):
         self.__dict__.update(kwargs)
     uiNode: UITreeNode
-    children: Optional[List[ChildOfNodeWithDisplayRegion]]
+    children: Optional[List[Union[UITreeNode, Any]]]
+    selfDisplayRegion: DisplayRegion
+    totalDisplayRegion: DisplayRegion
+
+ChildWithoutRegion = UITreeNode
+ChildWithRegion = UITreeNodeWithDisplayRegion
+
+#Defined a second time in order to init typings.
+class UITreeNodeWithDisplayRegion(object):
+    def __init__(self, **kwargs):
+        self.__dict__.update(kwargs)
+    uiNode: UITreeNode
+    children: Optional[List[Union[UITreeNode, UITreeNodeWithDisplayRegion]]]
     selfDisplayRegion: DisplayRegion
     totalDisplayRegion: DisplayRegion
 
 
-class ChildOfNodeWithDisplayRegion(Enum):
-    ChildWithRegion = UITreeNodeWithDisplayRegion
-    ChildWithoutRegion = UITreeNode
+# class ChildOfNodeWithDisplayRegion(Enum):
+#     ChildWithRegion = UITreeNodeWithDisplayRegion
+#     ChildWithoutRegion = UITreeNode
 
 
 class Location2d:
@@ -70,6 +88,7 @@ class ColorComponents(object):
     r: int
     g: int
     b: int
+
 
 
 class ContextMenuEntry(object):
@@ -370,10 +389,9 @@ class DronesWindowEntryDroneStructure(object):
     hitpointsPercent: Optional[Hitpoints]
 
 
-class DronesWindowEntry(Enum):
-    DronesWindowEntryGroup = DronesWindowEntryGroupStructure
-    DronesWindowEntryDrone = DronesWindowEntryDroneStructure
-
+# class DronesWindowEntry(Enum):
+DronesWindowEntryGroup = DronesWindowEntryGroupStructure
+DronesWindowEntryDrone = DronesWindowEntryDroneStructure
 
 class DronesWindow(object):
     def __init__(self, **kwargs):
@@ -497,7 +515,7 @@ class ChatWindow(object):
         self.__dict__.update(kwargs)
     uiNode: UITreeNodeWithDisplayRegion
     name: Optional[str]
-    user: Optional[ChatWindowUserlist]
+    userlist: Optional[ChatWindowUserlist]
 
 
 class ChatWindowStack(object):
