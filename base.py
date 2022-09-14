@@ -42,12 +42,12 @@ def parseUITreeWithDisplayRegionFromUITree(uiTree: UITreeNode) -> UITreeNodeWith
 def parseUserinterfaceFromUITree(uiTree: UITreeNodeWithDisplayRegion) -> ParsedUserInterface:
     x = ParsedUserInterface()
     x.uiTree = uiTree
-    # x.contextMenus = parseContextMenusFromUITreeRoot(uiTree)
-    # x.shipUI = parseShipUIFromUITreeRoot(uiTree)
-    # x.targets = parseTargetsFromUITreeRoot(uiTree)
+    x.contextMenus = parseContextMenusFromUITreeRoot(uiTree)
+    x.shipUI = parseShipUIFromUITreeRoot(uiTree)
+    x.targets = parseTargetsFromUITreeRoot(uiTree)
     # x.infoPanelContainer = parseInfoPanelContainerFromUIRoot(uiTree)
-    # x.overviewWindow = parseOverviewWindowFromUITreeRoot(uiTree)
-    # x.selectedItemWindow = parseSelectedItemWindowFromUITreeRoot(uiTree)
+    x.overviewWindow = parseOverviewWindowFromUITreeRoot(uiTree)
+    x.selectedItemWindow = parseSelectedItemWindowFromUITreeRoot(uiTree)
     x.dronesWindow = parseDronesWindowFromUITreeRoot(uiTree)
     # x.fittingWindow = parseFittingWindowFromUITreeRoot(uiTree)
     x.probeScannerWindow = parseProbeScannerWindowFromUITreeRoot(uiTree)
@@ -55,14 +55,14 @@ def parseUserinterfaceFromUITree(uiTree: UITreeNodeWithDisplayRegion) -> ParsedU
         uiTree)
     x.stationWindow = parseStationWindowFromUITreeRoot(uiTree)
     # x.inventoryWindows = parseInventoryWindowsFromUITreeRoot(uiTree)
-    # x.moduleButtonTooltip = parseModuleButtonTooltipFromUITreeRoot(uiTree)
+    x.moduleButtonTooltip = parseModuleButtonTooltipFromUITreeRoot(uiTree)
     x.chatWindowStacks = parseChatWindowStacksFromUITreeRoot(uiTree)
     # x.agentConversationWindows = parseAgentConversationWindowsFromUITreeRoot(
     #     uiTree)
     # x.marketOrdersWindow = parseMarketOrdersWindowFromUITreeRoot(uiTree)
     # x.surveyScanWindow = parseSurveyScanWindowFromUITreeRoot(uiTree)
-    # x.bookmarkLocationWindow = parseBookmarkLocationWindowFromUITreeRoot(
-    #     uiTree)
+    x.bookmarkLocationWindow = parseBookmarkLocationWindowFromUITreeRoot(
+        uiTree)
     # x.repairShopWindow = parseRepairShopWindowFromUITreeRoot(uiTree)
     # x.characterSheetWindow = parseCharacterSheetWindowFromUITreeRoot(uiTree)
     # x.fleetWindow = parseFleetWindowFromUITreeRoot(uiTree)
