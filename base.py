@@ -1652,7 +1652,7 @@ def parseStationWindowFromUITreeRoot(uiTreeRoot: UITreeNodeWithDisplayRegion) ->
 
 
 def parseInventoryWindowsFromUITreeRoot(uiTreeRoot: UITreeNodeWithDisplayRegion) -> List[InventoryWindow]:
-    return [ parseInventoryWindow(x) for x in listDescendantsWithDisplayRegion(uiTreeRoot) if "InventoryPrimary" in x.uiNode.pythonObjectTypeName or 'ActiveShipCargo' in x.uiNode.pythonObjectTypeName]]
+    return [ parseInventoryWindow(x) for x in listDescendantsWithDisplayRegion(uiTreeRoot) if "InventoryPrimary" in x.uiNode.pythonObjectTypeName or 'ActiveShipCargo' in x.uiNode.pythonObjectTypeName]
 # parseInventoryWindowsFromUITreeRoot : UITreeNodeWithDisplayRegion -> List InventoryWindow
 # parseInventoryWindowsFromUITreeRoot uiTreeRoot =
 #     uiTreeRoot
@@ -1762,7 +1762,14 @@ def parseInventoryWindow(windowUiNode: UITreeNodeWithDisplayRegion) -> Inventory
 
 
 def getContainedTreeViewEntryRootNodes(parentNode: UITreeNodeWithDisplayRegion) -> List[UITreeNodeWithDisplayRegion]:
-    pass
+    leftTreeEntriesAllNodes = [ x for x in listDescendantsWithDisplayRegion(parentNode) if x.uiNode.pythonObjectTypeName.startswith("TreeViewEntry")]
+    def isContainedintreeEntry(candidate):
+        result = []
+        for x in leftTreeEntriesAllNodes:
+            result.extend(listDescendantsWithDisplayRegion(x))
+        return candidate in result
+    return [ x for x in leftTreeEntriesAllNodes if not isContainedintreeEntry(x) ]
+
 # getContainedTreeViewEntryRootNodes : UITreeNodeWithDisplayRegion -> List UITreeNodeWithDisplayRegion
 # getContainedTreeViewEntryRootNodes parentNode =
 #     let
@@ -1818,7 +1825,8 @@ def parseInventoryWindowTreeViewEntry(treeEntryNode: UITreeNodeWithDisplayRegion
 
 
 def unwrapInventoryWindowLeftTreeEntryChild(child: InventoryWindowLeftTreeEntryChild) -> InventoryWindowLeftTreeEntry:
-    pass
+    if type(child) == InventoryWindowLeftTreeEntryChild:
+        return child
 # unwrapInventoryWindowLeftTreeEntryChild : InventoryWindowLeftTreeEntryChild -> InventoryWindowLeftTreeEntry
 # unwrapInventoryWindowLeftTreeEntryChild child =
 #     case child of

@@ -433,12 +433,7 @@ class StationWindow(object):
     undockButton: Optional[UITreeNodeWithDisplayRegion]
     abortUndockButton: Optional[UITreeNodeWithDisplayRegion]
 
-
-class InventoryWindowLeftTreeEntryChild(object):
-    def __init__(self, **kwargs):
-        self.__dict__.update(kwargs)
-    InventoryWindowLeftTreeEntryChild: Any  # InventoryWindowLeftTreeEntry
-
+InventoryWindowLeftTreeEntryChild: Any = None
 
 class InventoryWindowLeftTreeEntry(object):
     def __init__(self, **kwargs):
@@ -449,6 +444,7 @@ class InventoryWindowLeftTreeEntry(object):
     text: str
     children: List[InventoryWindowLeftTreeEntryChild]
 
+InventoryWindowLeftTreeEntryChild = InventoryWindowLeftTreeEntry
 
 class InventoryWindowCapacityGauge(object):
     def __init__(self, **kwargs):
