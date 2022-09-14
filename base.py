@@ -1610,7 +1610,8 @@ def parseStationWindowFromUITreeRoot(uiTreeRoot: UITreeNodeWithDisplayRegion) ->
         textToSearchLowercase = textToSearch.lower()
         def textMatches(text):
             return text == textToSearchLowercase or (f">{textToSearchLowercase}<") in text
-        return [x for x in buttons if getAllContainedDisplayTexts(x.uiNode) if textMatches(x.lower().strip()) ][0]
+        _r = [x for x in buttons if getAllContainedDisplayTexts(x.uiNode) if textMatches(x.lower().strip()) ]
+        return _r[0] if len(_r) > 0 else None
     result = StationWindow()
     result.uiNode = windowNode
     result.undockButton = buttonFromDisplayText("undock")
@@ -1651,7 +1652,7 @@ def parseStationWindowFromUITreeRoot(uiTreeRoot: UITreeNodeWithDisplayRegion) ->
 
 
 def parseInventoryWindowsFromUITreeRoot(uiTreeRoot: UITreeNodeWithDisplayRegion) -> List[InventoryWindow]:
-    pass
+    return [ parseInventoryWindow(x) for x in listDescendantsWithDisplayRegion(uiTreeRoot) if "InventoryPrimary" in x.uiNode.pythonObjectTypeName or 'ActiveShipCargo' in x.uiNode.pythonObjectTypeName]]
 # parseInventoryWindowsFromUITreeRoot : UITreeNodeWithDisplayRegion -> List InventoryWindow
 # parseInventoryWindowsFromUITreeRoot uiTreeRoot =
 #     uiTreeRoot
