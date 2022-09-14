@@ -42,37 +42,37 @@ def parseUITreeWithDisplayRegionFromUITree(uiTree: UITreeNode) -> UITreeNodeWith
 def parseUserinterfaceFromUITree(uiTree: UITreeNodeWithDisplayRegion) -> ParsedUserInterface:
     x = ParsedUserInterface()
     x.uiTree = uiTree
-    x.contextMenus = parseContextMenusFromUITreeRoot(uiTree)
-    x.shipUI = parseShipUIFromUITreeRoot(uiTree)
-    x.targets = parseTargetsFromUITreeRoot(uiTree)
-    x.infoPanelContainer = parseInfoPanelContainerFromUIRoot(uiTree)
-    x.overviewWindow = parseOverviewWindowFromUITreeRoot(uiTree)
-    x.selectedItemWindow = parseSelectedItemWindowFromUITreeRoot(uiTree)
+    # x.contextMenus = parseContextMenusFromUITreeRoot(uiTree)
+    # x.shipUI = parseShipUIFromUITreeRoot(uiTree)
+    # x.targets = parseTargetsFromUITreeRoot(uiTree)
+    # x.infoPanelContainer = parseInfoPanelContainerFromUIRoot(uiTree)
+    # x.overviewWindow = parseOverviewWindowFromUITreeRoot(uiTree)
+    # x.selectedItemWindow = parseSelectedItemWindowFromUITreeRoot(uiTree)
     x.dronesWindow = parseDronesWindowFromUITreeRoot(uiTree)
-    x.fittingWindow = parseFittingWindowFromUITreeRoot(uiTree)
+    # x.fittingWindow = parseFittingWindowFromUITreeRoot(uiTree)
     x.probeScannerWindow = parseProbeScannerWindowFromUITreeRoot(uiTree)
     x.directionalScannerWindow = parseDirectionalScannerWindowFromUITreeRoot(
         uiTree)
     x.stationWindow = parseStationWindowFromUITreeRoot(uiTree)
-    x.inventoryWindows = parseInventoryWindowsFromUITreeRoot(uiTree)
-    x.moduleButtonTooltip = parseModuleButtonTooltipFromUITreeRoot(uiTree)
+    # x.inventoryWindows = parseInventoryWindowsFromUITreeRoot(uiTree)
+    # x.moduleButtonTooltip = parseModuleButtonTooltipFromUITreeRoot(uiTree)
     x.chatWindowStacks = parseChatWindowStacksFromUITreeRoot(uiTree)
-    x.agentConversationWindows = parseAgentConversationWindowsFromUITreeRoot(
-        uiTree)
-    x.marketOrdersWindow = parseMarketOrdersWindowFromUITreeRoot(uiTree)
-    x.surveyScanWindow = parseSurveyScanWindowFromUITreeRoot(uiTree)
-    x.bookmarkLocationWindow = parseBookmarkLocationWindowFromUITreeRoot(
-        uiTree)
-    x.repairShopWindow = parseRepairShopWindowFromUITreeRoot(uiTree)
-    x.characterSheetWindow = parseCharacterSheetWindowFromUITreeRoot(uiTree)
-    x.fleetWindow = parseFleetWindowFromUITreeRoot(uiTree)
-    x.watchListPanel = parseWatchListPanelFromUITreeRoot(uiTree)
-    x.standaloneBookmarkWindow = parseStandaloneBookmarkWindowFromUITreeRoot(
-        uiTree)
-    x.neocom = parseNeocomFromUITreeRoot(uiTree)
-    x.messageBoxes = parseMessageBoxesFromUITreeRoot(uiTree)
-    x.layerAbovemain = parseLayerAbovemainFromUITreeRoot(uiTree)
-    x.keyActivationWindow = parseKeyActivationWindowFromUITreeRoot(uiTree)
+    # x.agentConversationWindows = parseAgentConversationWindowsFromUITreeRoot(
+    #     uiTree)
+    # x.marketOrdersWindow = parseMarketOrdersWindowFromUITreeRoot(uiTree)
+    # x.surveyScanWindow = parseSurveyScanWindowFromUITreeRoot(uiTree)
+    # x.bookmarkLocationWindow = parseBookmarkLocationWindowFromUITreeRoot(
+    #     uiTree)
+    # x.repairShopWindow = parseRepairShopWindowFromUITreeRoot(uiTree)
+    # x.characterSheetWindow = parseCharacterSheetWindowFromUITreeRoot(uiTree)
+    # x.fleetWindow = parseFleetWindowFromUITreeRoot(uiTree)
+    # x.watchListPanel = parseWatchListPanelFromUITreeRoot(uiTree)
+    # x.standaloneBookmarkWindow = parseStandaloneBookmarkWindowFromUITreeRoot(
+    #     uiTree)
+    # x.neocom = parseNeocomFromUITreeRoot(uiTree)
+    # x.messageBoxes = parseMessageBoxesFromUITreeRoot(uiTree)
+    # x.layerAbovemain = parseLayerAbovemainFromUITreeRoot(uiTree)
+    # x.keyActivationWindow = parseKeyActivationWindowFromUITreeRoot(uiTree)
     return x
 
 
@@ -1608,7 +1608,7 @@ def parseStationWindowFromUITreeRoot(uiTreeRoot: UITreeNodeWithDisplayRegion) ->
         textToSearchLowercase = textToSearch.lower()
         def textMatches(text):
             return text == textToSearchLowercase or (f">{textToSearchLowercase}<") in text
-        _r = [x for x in buttons if getAllContainedDisplayTexts(x.uiNode) if textMatches(x.lower().strip()) ]
+        _r = [y for x in buttons for y in getAllContainedDisplayTexts(x.uiNode) if textMatches(y.lower().strip()) ]
         return _r[0] if len(_r) > 0 else None
     result = StationWindow()
     result.uiNode = windowNode
@@ -2658,7 +2658,8 @@ def getAllContainedDisplayTexts(uiNode: UITreeNode) -> List[str]:
     _decendants = listDescendantsInUITreeNode(uiNode)
     if _decendants is not None:
         _list.extend(_decendants)
-    return [getDisplayText(x) for x in _list if x is not None ]
+    _data = [getDisplayText(x) for x in _list if x is not None ]
+    return [ x for x in _data if x is not None]
 # getAllContainedDisplayTexts : UITreeNode -> List str
 # getAllContainedDisplayTexts uiNode =
 #     uiNode
