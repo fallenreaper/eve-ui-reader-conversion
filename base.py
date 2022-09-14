@@ -14,9 +14,6 @@
 # import Regex
 # import Set
 
-from cgitb import text
-from curses import window
-from tokenize import maybe
 from classes import *
 from typing import Callable, Tuple
 from helpers import *
@@ -223,7 +220,7 @@ def getDisplayRegionFromDictEntries(uiNode: UITreeNode) -> Optional[DisplayRegio
 
 
 def parseContextMenusFromUITreeRoot(uiTreeRoot: UITreeNodeWithDisplayRegion) -> List[ContextMenu]:
-    pass
+    raise NotImplementedError()
 
 # parseContextMenusFromUITreeRoot : UITreeNodeWithDisplayRegion -> List ContextMenu
 # parseContextMenusFromUITreeRoot uiTreeRoot =
@@ -243,7 +240,7 @@ def parseContextMenusFromUITreeRoot(uiTreeRoot: UITreeNodeWithDisplayRegion) -> 
 
 
 def parseInfoPanelContainerFromUIRoot(uiTreeRoot: UITreeNodeWithDisplayRegion) -> Optional[InfoPanelContainer]:
-    pass
+    raise NotImplementedError()
 # parseContextMenusFromUITreeRoot : UITreeNodeWithDisplayRegion -> Maybe InfoPanelContainer
 # parseInfoPanelContainerFromUIRoot uiTreeRoot =
 #     case
@@ -266,7 +263,7 @@ def parseInfoPanelContainerFromUIRoot(uiTreeRoot: UITreeNodeWithDisplayRegion) -
 
 
 def parseInfoPanelIconsFromInfoPanelContainer(infoPanelContainerNode: UITreeNodeWithDisplayRegion) -> Optional[InfoPanelIcons]:
-    pass
+    raise NotImplementedError()
 
 # parseInfoPanelIconsFromInfoPanelContainer : UITreeNodeWithDisplayRegion -> Maybe InfoPanelIcons
 # parseInfoPanelIconsFromInfoPanelContainer infoPanelContainerNode =
@@ -303,7 +300,7 @@ def parseInfoPanelIconsFromInfoPanelContainer(infoPanelContainerNode: UITreeNode
 
 
 def parseInfoPanelLocationInfoFromInfoPanelContainer(infoPanelContainerNode: UITreeNodeWithDisplayRegion) -> Optional[InfoPanelLocationInfo]:
-    pass
+    raise NotImplementedError()
 # parseInfoPanelLocationInfoFromInfoPanelContainer : UITreeNodeWithDisplayRegion -> Maybe InfoPanelLocationInfo
 # parseInfoPanelLocationInfoFromInfoPanelContainer infoPanelContainerNode =
 #     case
@@ -364,7 +361,7 @@ def parseInfoPanelLocationInfoFromInfoPanelContainer(infoPanelContainerNode: UIT
 
 
 def parseSecurityStatusPercentFromUINodeText(s: str) -> Optional[int]:
-    pass
+    raise NotImplementedError()
 # parseSecurityStatusPercentFromUINodeText : str -> Maybe int
 # parseSecurityStatusPercentFromUINodeText =
 #     Maybe.Extra.oneOf
@@ -376,7 +373,7 @@ def parseSecurityStatusPercentFromUINodeText(s: str) -> Optional[int]:
 
 
 def parseCurrentSolarSystemFromUINodeText(s: str) -> Optional[str]:
-    pass
+    raise NotImplementedError()
 # parseCurrentSolarSystemFromUINodeText : str -> Maybe str
 # parseCurrentSolarSystemFromUINodeText =
 #     Maybe.Extra.oneOf
@@ -386,7 +383,7 @@ def parseCurrentSolarSystemFromUINodeText(s: str) -> Optional[str]:
 
 
 def parseCurrentStationNameFromInfoPanelLocationInfoLabelText(s: str) -> Optional[str]:
-    pass
+    raise NotImplementedError()
 # parseCurrentStationNameFromInfoPanelLocationInfoLabelText : str -> Maybe str
 # parseCurrentStationNameFromInfoPanelLocationInfoLabelText =
 #     getSubstrBetweenXmlTagsAfterMarker "alt='Current Station'"
@@ -394,7 +391,7 @@ def parseCurrentStationNameFromInfoPanelLocationInfoLabelText(s: str) -> Optiona
 
 
 def parseInfoPanelRouteFromInfoPanelContainer(infoPanelContainerNode: UITreeNodeWithDisplayRegion) -> Optional[InfoPanelRoute]:
-    pass
+    raise NotImplementedError()
 # parseInfoPanelRouteFromInfoPanelContainer : UITreeNodeWithDisplayRegion -> Maybe InfoPanelRoute
 # parseInfoPanelRouteFromInfoPanelContainer infoPanelContainerNode =
 #     case
@@ -417,7 +414,7 @@ def parseInfoPanelRouteFromInfoPanelContainer(infoPanelContainerNode: UITreeNode
 
 
 def parseInfoPanelAgentMissionsFromInfoPanelContainer(infoPanelContainerNode: UITreeNodeWithDisplayRegion) -> Optional[InfoPanelAgentMissions]:
-    pass
+    raise NotImplementedError()
 # parseInfoPanelAgentMissionsFromInfoPanelContainer : UITreeNodeWithDisplayRegion -> Maybe InfoPanelAgentMissions
 # parseInfoPanelAgentMissionsFromInfoPanelContainer infoPanelContainerNode =
 #     case
@@ -443,7 +440,7 @@ def parseInfoPanelAgentMissionsFromInfoPanelContainer(infoPanelContainerNode: UI
 
 
 def parseContextMenu(contextMenuUINOde: UITreeNodeWithDisplayRegion) -> ContextMenu:
-    pass
+    raise NotImplementedError()
 # parseContextMenu : UITreeNodeWithDisplayRegion -> ContextMenu
 # parseContextMenu contextMenuUINode =
 #     let
@@ -476,7 +473,7 @@ def parseContextMenu(contextMenuUINOde: UITreeNodeWithDisplayRegion) -> ContextM
 
 
 def parseShipUIFromUITreeRoot(uiTreeRoot: UITreeNodeWithDisplayRegion) -> Optional[ShipUI]:
-    pass
+    raise NotImplementedError()
 # parseShipUIFromUITreeRoot : UITreeNodeWithDisplayRegion -> Maybe ShipUI
 # parseShipUIFromUITreeRoot uiTreeRoot =
 #     case
@@ -579,7 +576,7 @@ def parseShipUIFromUITreeRoot(uiTreeRoot: UITreeNodeWithDisplayRegion) -> Option
 
 
 def parseShipUIModuleButton(slotNode: UITreeNodeWithDisplayRegion, moduleButtonNode: UITreeNodeWithDisplayRegion) -> ShipUIModuleButton:
-    pass
+    raise NotImplementedError()
 # parseShipUIModuleButton : { slotNode : UITreeNodeWithDisplayRegion, moduleButtonNode : UITreeNodeWithDisplayRegion } -> ShipUIModuleButton
 # parseShipUIModuleButton { slotNode, moduleButtonNode } =
 #     let
@@ -620,7 +617,7 @@ def parseShipUIModuleButton(slotNode: UITreeNodeWithDisplayRegion, moduleButtonN
 
 
 def parseShipUICapacitorFromUINode(capacitorUINode: UITreeNodeWithDisplayRegion) -> ShipUICapacitor:
-    pass
+    raise NotImplementedError()
 # parseShipUICapacitorFromUINode : UITreeNodeWithDisplayRegion -> ShipUICapacitor
 # parseShipUICapacitorFromUINode capacitorUINode =
 #     let
@@ -699,7 +696,7 @@ def groupShipUIModulesintoRows(capacitor: ShipUICapacitor, modules: List[ShipUIM
 
 
 def parseShipIndication(indicationUINode: UITreeNodeWithDisplayRegion) -> ShipUIIndication:
-    pass
+    raise NotImplementedError()
 # parseShipUIIndication : UITreeNodeWithDisplayRegion -> ShipUIIndication
 # parseShipUIIndication indicationUINode =
 #     let
@@ -728,7 +725,7 @@ def parseShipIndication(indicationUINode: UITreeNodeWithDisplayRegion) -> ShipUI
 
 
 def parseSquadronsUI(squadronsUINode: UITreeNodeWithDisplayRegion) -> SquadronsUI:
-    pass
+    raise NotImplementedError()
 # parseSquadronsUI : UITreeNodeWithDisplayRegion -> SquadronsUI
 # parseSquadronsUI squadronsUINode =
 #     { uiNode = squadronsUINode
@@ -741,7 +738,7 @@ def parseSquadronsUI(squadronsUINode: UITreeNodeWithDisplayRegion) -> SquadronsU
 
 
 def parseSquadronUI(squadronUINode: UITreeNodeWithDisplayRegion) -> SquadronUI:
-    pass
+    raise NotImplementedError()
 # parseSquadronUI : UITreeNodeWithDisplayRegion -> SquadronUI
 # parseSquadronUI squadronUINode =
 #     { uiNode = squadronUINode
@@ -759,7 +756,7 @@ def parseSquadronUI(squadronUINode: UITreeNodeWithDisplayRegion) -> SquadronUI:
 
 
 def parseSquadronAbilityIcon(abilityIconUINode: UITreeNodeWithDisplayRegion) -> SquadronAbilityIcon:
-    pass
+    raise NotImplementedError()
 # parseSquadronAbilityIcon : UITreeNodeWithDisplayRegion -> SquadronAbilityIcon
 # parseSquadronAbilityIcon abilityIconUINode =
 #     { uiNode = abilityIconUINode
@@ -778,7 +775,7 @@ def parseSquadronAbilityIcon(abilityIconUINode: UITreeNodeWithDisplayRegion) -> 
 
 
 def parseTargetsFromUITreeRoot(x: UITreeNodeWithDisplayRegion) -> List[Target]:
-    pass
+    raise NotImplementedError()
 # parseTargetsFromUITreeRoot : UITreeNodeWithDisplayRegion -> List Target
 # parseTargetsFromUITreeRoot =
 #     listDescendantsWithDisplayRegion
@@ -787,7 +784,7 @@ def parseTargetsFromUITreeRoot(x: UITreeNodeWithDisplayRegion) -> List[Target]:
 
 
 def parseTarget(targetNode: UITreeNodeWithDisplayRegion) -> Target:
-    pass
+    raise NotImplementedError()
 # parseTarget : UITreeNodeWithDisplayRegion -> Target
 # parseTarget targetNode =
 #     let
@@ -827,7 +824,7 @@ def parseTarget(targetNode: UITreeNodeWithDisplayRegion) -> Target:
 
 
 def parseOverviewWindowFromUITreeRoot(uiTreeRoot: UITreeNodeWithDisplayRegion) -> Optional[OverviewWindow]:
-    pass
+    raise NotImplementedError()
 # parseOverviewWindowFromUITreeRoot : UITreeNodeWithDisplayRegion -> Maybe OverviewWindow
 # parseOverviewWindowFromUITreeRoot uiTreeRoot =
 #     case
@@ -876,8 +873,9 @@ def parseOverviewWindowFromUITreeRoot(uiTreeRoot: UITreeNodeWithDisplayRegion) -
 
 
 def parseOverviewWindowEntry(entriesHeaders: List[Union[str, UITreeNodeWithDisplayRegion]]) -> Callable[[UITreeNodeWithDisplayRegion], OverviewWindowEntry]:
+    raise NotImplementedError()
     def fn(x: UITreeNodeWithDisplayRegion) -> OverviewWindowEntry:
-        pass
+        raise NotImplementedError()
     return fn
 # parseOverviewWindowEntry : List ( str, UITreeNodeWithDisplayRegion ) -> UITreeNodeWithDisplayRegion -> OverviewWindowEntry
 # parseOverviewWindowEntry entriesHeaders overviewEntryNode =
@@ -976,7 +974,7 @@ def parseOverviewWindowEntry(entriesHeaders: List[Union[str, UITreeNodeWithDispl
 
 
 def parseOverviewEntryDistanceInMetersFromText(distanceDisplayTextBeforeTrim: str) -> Union[str, int]:
-    pass
+    raise NotImplementedError()
 # parseOverviewEntryDistanceInMetersFromText : str -> Result str int
 # parseOverviewEntryDistanceInMetersFromText distanceDisplayTextBeforeTrim =
 #     case distanceDisplayTextBeforeTrim |> str.trim |> str.split " " |> List.reverse of
@@ -997,7 +995,7 @@ def parseOverviewEntryDistanceInMetersFromText(distanceDisplayTextBeforeTrim: st
 
 
 def parseDistanceUnitInMeters(unitText: str) -> Optional[int]:
-    pass
+    raise NotImplementedError()
 # parseDistanceUnitInMeters : str -> Maybe int
 # parseDistanceUnitInMeters unitText =
 #     case str.trim unitText of
@@ -1010,7 +1008,7 @@ def parseDistanceUnitInMeters(unitText: str) -> Optional[int]:
 
 
 def parseSelectedItemWindowFromUITreeRoot(uiTreeRoot: UITreeNodeWithDisplayRegion) -> Optional[SelectedItemWindow]:
-    pass
+    raise NotImplementedError()
 # parseSelectedItemWindowFromUITreeRoot : UITreeNodeWithDisplayRegion -> Maybe SelectedItemWindow
 # parseSelectedItemWindowFromUITreeRoot uiTreeRoot =
 #     uiTreeRoot
@@ -1021,7 +1019,7 @@ def parseSelectedItemWindowFromUITreeRoot(uiTreeRoot: UITreeNodeWithDisplayRegio
 
 
 def parseSelectedItemWindow(windowNode: UITreeNodeWithDisplayRegion) -> SelectedItemWindow:
-    pass
+    raise NotImplementedError()
 # parseSelectedItemWindow : UITreeNodeWithDisplayRegion -> SelectedItemWindow
 # parseSelectedItemWindow windowNode =
 #     let
@@ -1133,7 +1131,7 @@ def dronesGroupTreesFromFlatListOfEntries(entriesBeforeOrdering: List[Union[Dron
     result: List[DronesWindowEntryGroup] = []
     for x in entriesOrderedVertically:
         if type(x) == DronesWindowEntryDrone:
-            pass
+            raise NotImplementedError()
         if type(x) == DronesWindowEntryGroup:
             result.append(x)
     if len(result) > 0:
@@ -1662,7 +1660,7 @@ def parseInventoryWindowsFromUITreeRoot(uiTreeRoot: UITreeNodeWithDisplayRegion)
 
 
 def parseInventoryWindow(windowUiNode: UITreeNodeWithDisplayRegion) -> InventoryWindow:
-    pass
+    raise NotImplementedError()
 # parseInventoryWindow : UITreeNodeWithDisplayRegion -> InventoryWindow
 # parseInventoryWindow windowUiNode =
 #     let
@@ -1787,7 +1785,7 @@ def getContainedTreeViewEntryRootNodes(parentNode: UITreeNodeWithDisplayRegion) 
 
 
 def parseInventoryWindowTreeViewEntry(treeEntryNode: UITreeNodeWithDisplayRegion) -> InventoryWindowLeftTreeEntry:
-    pass
+    raise NotImplementedError()
 # parseInventoryWindowTreeViewEntry : UITreeNodeWithDisplayRegion -> InventoryWindowLeftTreeEntry
 # parseInventoryWindowTreeViewEntry treeEntryNode =
 #     let
@@ -1835,7 +1833,7 @@ def unwrapInventoryWindowLeftTreeEntryChild(child: InventoryWindowLeftTreeEntryC
 
 
 def parseInventoryCapacityGaugeText(capacityText: str) -> Union[str, InventoryWindowCapacityGauge]:
-    pass
+    raise NotImplementedError()
 # parseInventoryCapacityGaugeText : str -> Result str InventoryWindowCapacityGauge
 # parseInventoryCapacityGaugeText capacityText =
 #     let
@@ -1875,7 +1873,7 @@ def parseInventoryCapacityGaugeText(capacityText: str) -> Union[str, InventoryWi
 
 
 def parseModuleButtonTooltipFromUITreeRoot(uiTreeRoot: UITreeNodeWithDisplayRegion) -> Optional[ModuleButtonTooltip]:
-    pass
+    raise NotImplementedError()
 # parseModuleButtonTooltipFromUITreeRoot : UITreeNodeWithDisplayRegion -> Maybe ModuleButtonTooltip
 # parseModuleButtonTooltipFromUITreeRoot uiTreeRoot =
 #     case
@@ -1891,7 +1889,7 @@ def parseModuleButtonTooltipFromUITreeRoot(uiTreeRoot: UITreeNodeWithDisplayRegi
 
 
 def parseModuleButtonTooltip(tooltipUINode: UITreeNodeWithDisplayRegion) -> ModuleButtonTooltip:
-    pass
+    raise NotImplementedError()
 # parseModuleButtonTooltip : UITreeNodeWithDisplayRegion -> ModuleButtonTooltip
 # parseModuleButtonTooltip tooltipUINode =
 #     let
@@ -1947,7 +1945,7 @@ def parseModuleButtonTooltip(tooltipUINode: UITreeNodeWithDisplayRegion) -> Modu
 
 
 def parseModuleButtonTooltipShortcut(shortcutText: str) -> Union[str, List[CUSTOMKEYCODE]]:
-    pass
+    raise NotImplementedError()
 # parseModuleButtonTooltipShortcut : str -> Result str (List Common.EffectOnWindow.VirtualKeyCode)
 # parseModuleButtonTooltipShortcut shortcutText =
 #     shortcutText
@@ -1972,7 +1970,7 @@ def parseModuleButtonTooltipShortcut(shortcutText: str) -> Union[str, List[CUSTO
 
 
 def parseKeyShortcutText(keytext: str) -> Optional[CUSTOMKEYCODE]:
-    pass
+    raise NotImplementedError()
 # parseKeyShortcutText : str -> Maybe Common.EffectOnWindow.VirtualKeyCode
 # parseKeyShortcutText keyText =
 #     [ ( "CTRL", Common.EffectOnWindow.vkey_LCONTROL )
@@ -2149,7 +2147,7 @@ def parseChatUserEntry(chatUserUiNode: UITreeNodeWithDisplayRegion) -> ChatUserE
 
 
 def parseAgentConversationWindowsFromUITreeRoot(uiTreeRoot: UITreeNodeWithDisplayRegion) -> List[AgentConversationWindow]:
-    pass
+    raise NotImplementedError()
 # parseAgentConversationWindowsFromUITreeRoot : UITreeNodeWithDisplayRegion -> List AgentConversationWindow
 # parseAgentConversationWindowsFromUITreeRoot uiTreeRoot =
 #     uiTreeRoot
@@ -2159,7 +2157,7 @@ def parseAgentConversationWindowsFromUITreeRoot(uiTreeRoot: UITreeNodeWithDispla
 
 
 def parseAgentConversationWindow(windowUINode: UITreeNodeWithDisplayRegion) -> AgentConversationWindow:
-    pass
+    raise NotImplementedError()
 # parseAgentConversationWindow : UITreeNodeWithDisplayRegion -> AgentConversationWindow
 # parseAgentConversationWindow windowUINode =
 #     { uiNode = windowUINode
@@ -2167,7 +2165,7 @@ def parseAgentConversationWindow(windowUINode: UITreeNodeWithDisplayRegion) -> A
 
 
 def parseMarketOrdersWindowFromUITreeRoot(uiTreeRoot: UITreeNodeWithDisplayRegion) -> Optional[MarketOrdersWindow]:
-    pass
+    raise NotImplementedError()
 # parseMarketOrdersWindowFromUITreeRoot : UITreeNodeWithDisplayRegion -> Maybe MarketOrdersWindow
 # parseMarketOrdersWindowFromUITreeRoot uiTreeRoot =
 #     uiTreeRoot
@@ -2178,7 +2176,7 @@ def parseMarketOrdersWindowFromUITreeRoot(uiTreeRoot: UITreeNodeWithDisplayRegio
 
 
 def parseMarketOrdersWindow(windowUINode: UITreeNodeWithDisplayRegion) -> MarketOrdersWindow:
-    pass
+    raise NotImplementedError()
 # parseMarketOrdersWindow : UITreeNodeWithDisplayRegion -> MarketOrdersWindow
 # parseMarketOrdersWindow windowUINode =
 #     { uiNode = windowUINode
@@ -2186,7 +2184,7 @@ def parseMarketOrdersWindow(windowUINode: UITreeNodeWithDisplayRegion) -> Market
 
 
 def parseFittingWindowFromUITreeRoot(uiTreeRoot: UITreeNodeWithDisplayRegion) -> Optional[FittingWindow]:
-    pass
+    raise NotImplementedError()
 # parseFittingWindowFromUITreeRoot : UITreeNodeWithDisplayRegion -> Maybe FittingWindow
 # parseFittingWindowFromUITreeRoot uiTreeRoot =
 #     uiTreeRoot
@@ -2197,7 +2195,7 @@ def parseFittingWindowFromUITreeRoot(uiTreeRoot: UITreeNodeWithDisplayRegion) ->
 
 
 def parseFittingWindow(windowUINode: UITreeNodeWithDisplayRegion) -> FittingWindow:
-    pass
+    raise NotImplementedError()
 # parseFittingWindow : UITreeNodeWithDisplayRegion -> FittingWindow
 # parseFittingWindow windowUINode =
 #     { uiNode = windowUINode
@@ -2205,7 +2203,7 @@ def parseFittingWindow(windowUINode: UITreeNodeWithDisplayRegion) -> FittingWind
 
 
 def parseSurveyScanWindowFromUITreeRoot(uiTreeRoot: UITreeNodeWithDisplayRegion) -> Optional[SurveyScanWindow]:
-    pass
+    raise NotImplementedError()
 # parseSurveyScanWindowFromUITreeRoot : UITreeNodeWithDisplayRegion -> Maybe SurveyScanWindow
 # parseSurveyScanWindowFromUITreeRoot uiTreeRoot =
 #     uiTreeRoot
@@ -2216,7 +2214,7 @@ def parseSurveyScanWindowFromUITreeRoot(uiTreeRoot: UITreeNodeWithDisplayRegion)
 
 
 def parseSurveyScanWindow(windowUiNode: UITreeNodeWithDisplayRegion) -> SurveyScanWindow:
-    pass
+    raise NotImplementedError()
 # parseSurveyScanWindow : UITreeNodeWithDisplayRegion -> SurveyScanWindow
 # parseSurveyScanWindow windowUINode =
 #     { uiNode = windowUINode
@@ -2228,7 +2226,7 @@ def parseSurveyScanWindow(windowUiNode: UITreeNodeWithDisplayRegion) -> SurveySc
 
 
 def parseBookmarkLocationWindowFromUITreeRoot(uiTreeRoot: UITreeNodeWithDisplayRegion) -> Optional[BookmarkLocationWindow]:
-    pass
+    raise NotImplementedError()
 # parseBookmarkLocationWindowFromUITreeRoot : UITreeNodeWithDisplayRegion -> Maybe BookmarkLocationWindow
 # parseBookmarkLocationWindowFromUITreeRoot uiTreeRoot =
 #     uiTreeRoot
@@ -2239,7 +2237,7 @@ def parseBookmarkLocationWindowFromUITreeRoot(uiTreeRoot: UITreeNodeWithDisplayR
 
 
 def parseBookmarkLocationWindow(windowuinode: UITreeNodeWithDisplayRegion) -> BookmarkLocationWindow:
-    pass
+    raise NotImplementedError()
 # parseBookmarkLocationWindow : UITreeNodeWithDisplayRegion -> BookmarkLocationWindow
 # parseBookmarkLocationWindow windowUINode =
 #     let
@@ -2258,7 +2256,7 @@ def parseBookmarkLocationWindow(windowuinode: UITreeNodeWithDisplayRegion) -> Bo
 
 
 def parseRepairShopWindowFromUITreeRoot(uiTreeRoot: UITreeNodeWithDisplayRegion) -> Optional[RepairShopWindow]:
-    pass
+    raise NotImplementedError()
 # parseRepairShopWindowFromUITreeRoot : UITreeNodeWithDisplayRegion -> Maybe RepairShopWindow
 # parseRepairShopWindowFromUITreeRoot uiTreeRoot =
 #     uiTreeRoot
@@ -2269,7 +2267,7 @@ def parseRepairShopWindowFromUITreeRoot(uiTreeRoot: UITreeNodeWithDisplayRegion)
 
 
 def uiTreeRoot(windowUINode: UITreeNodeWithDisplayRegion) -> RepairShopWindow:
-    pass
+    raise NotImplementedError()
 # parseRepairShopWindow : UITreeNodeWithDisplayRegion -> RepairShopWindow
 # parseRepairShopWindow windowUINode =
 #     let
@@ -2293,7 +2291,7 @@ def uiTreeRoot(windowUINode: UITreeNodeWithDisplayRegion) -> RepairShopWindow:
 
 
 def parseCharacterSheetWindowFromUITreeRoot(uiTreeRoot: UITreeNodeWithDisplayRegion) -> Optional[CharacterSheetWindow]:
-    pass
+    raise NotImplementedError()
 # parseCharacterSheetWindowFromUITreeRoot : UITreeNodeWithDisplayRegion -> Maybe CharacterSheetWindow
 # parseCharacterSheetWindowFromUITreeRoot uiTreeRoot =
 #     uiTreeRoot
@@ -2304,7 +2302,7 @@ def parseCharacterSheetWindowFromUITreeRoot(uiTreeRoot: UITreeNodeWithDisplayReg
 
 
 def parseCharacterSheetWindow(windowUINode: UITreeNodeWithDisplayRegion) -> CharacterSheetWindow:
-    pass
+    raise NotImplementedError()
 # parseCharacterSheetWindow : UITreeNodeWithDisplayRegion -> CharacterSheetWindow
 # parseCharacterSheetWindow windowUINode =
 #     let
@@ -2319,7 +2317,7 @@ def parseCharacterSheetWindow(windowUINode: UITreeNodeWithDisplayRegion) -> Char
 
 
 def parseFleetWindowFromUITreeRoot(uiTreeRoot: UITreeNodeWithDisplayRegion) -> Optional[FleetWindow]:
-    pass
+    raise NotImplementedError()
 # parseFleetWindowFromUITreeRoot : UITreeNodeWithDisplayRegion -> Maybe FleetWindow
 # parseFleetWindowFromUITreeRoot uiTreeRoot =
 #     uiTreeRoot
@@ -2330,7 +2328,7 @@ def parseFleetWindowFromUITreeRoot(uiTreeRoot: UITreeNodeWithDisplayRegion) -> O
 
 
 def parseFleetwindow(windowUINode: UITreeNodeWithDisplayRegion) -> FleetWindow:
-    pass
+    raise NotImplementedError()
 # parseFleetWindow : UITreeNodeWithDisplayRegion -> FleetWindow
 # parseFleetWindow windowUINode =
 #     let
@@ -2345,7 +2343,7 @@ def parseFleetwindow(windowUINode: UITreeNodeWithDisplayRegion) -> FleetWindow:
 
 
 def parseWatchListPanelFromUITreeRoot(uiTreeRoot: UITreeNodeWithDisplayRegion) -> Optional[WatchListPanel]:
-    pass
+    raise NotImplementedError()
 # parseWatchListPanelFromUITreeRoot : UITreeNodeWithDisplayRegion -> Maybe WatchListPanel
 # parseWatchListPanelFromUITreeRoot uiTreeRoot =
 #     uiTreeRoot
@@ -2356,7 +2354,7 @@ def parseWatchListPanelFromUITreeRoot(uiTreeRoot: UITreeNodeWithDisplayRegion) -
 
 
 def parseWatchListPanel(windowUINode: UITreeNodeWithDisplayRegion) -> WatchListPanel:
-    pass
+    raise NotImplementedError()
 # parseWatchListPanel : UITreeNodeWithDisplayRegion -> WatchListPanel
 # parseWatchListPanel windowUINode =
 #     let
@@ -2371,7 +2369,7 @@ def parseWatchListPanel(windowUINode: UITreeNodeWithDisplayRegion) -> WatchListP
 
 
 def parseStandaloneBookmarkWindowFromUITreeRoot(uiTreeRoot: UITreeNodeWithDisplayRegion) -> Optional[StandaloneBookmarkWindow]:
-    pass
+    raise NotImplementedError()
 # parseStandaloneBookmarkWindowFromUITreeRoot : UITreeNodeWithDisplayRegion -> Maybe StandaloneBookmarkWindow
 # parseStandaloneBookmarkWindowFromUITreeRoot uiTreeRoot =
 #     uiTreeRoot
@@ -2382,7 +2380,7 @@ def parseStandaloneBookmarkWindowFromUITreeRoot(uiTreeRoot: UITreeNodeWithDispla
 
 
 def parseStandaloneBookmarkWindow(windowUINode: UITreeNodeWithDisplayRegion) -> StandaloneBookmarkWindow:
-    pass
+    raise NotImplementedError()
 # parseStandaloneBookmarkWindow : UITreeNodeWithDisplayRegion -> StandaloneBookmarkWindow
 # parseStandaloneBookmarkWindow windowUINode =
 #     let
@@ -2397,7 +2395,7 @@ def parseStandaloneBookmarkWindow(windowUINode: UITreeNodeWithDisplayRegion) -> 
 
 
 def parseNeocomFromUITreeRoot(uiTreeRoot: UITreeNodeWithDisplayRegion) -> Optional[Neocom]:
-    pass
+    raise NotImplementedError()
 # parseNeocomFromUITreeRoot : UITreeNodeWithDisplayRegion -> Maybe Neocom
 # parseNeocomFromUITreeRoot uiTreeRoot =
 #     case
@@ -2413,7 +2411,7 @@ def parseNeocomFromUITreeRoot(uiTreeRoot: UITreeNodeWithDisplayRegion) -> Option
 
 
 def parseNeocom(neocomUiNode: UITreeNodeWithDisplayRegion) -> Neocom:
-    pass
+    raise NotImplementedError()
 # parseNeocom : UITreeNodeWithDisplayRegion -> Neocom
 # parseNeocom neocomUiNode =
 #     let
@@ -2450,7 +2448,7 @@ def parseNeocom(neocomUiNode: UITreeNodeWithDisplayRegion) -> Neocom:
 
 
 def parseNeocomClockText(clockText: str) -> Union[str, ParsedTime]:
-    pass
+    raise NotImplementedError()
 # parseNeocomClockText : str -> Result str { hour : int, minute : int }
 # parseNeocomClockText clockText =
 #     case clockText |> str.split ":" of
@@ -2469,7 +2467,7 @@ def parseNeocomClockText(clockText: str) -> Union[str, ParsedTime]:
 
 
 def parseKeyActivationWindowFromUITreeRoot(uiTreeRoot: UITreeNodeWithDisplayRegion) -> Optional[KeyActivationWindow]:
-    pass
+    raise NotImplementedError()
 # parseKeyActivationWindowFromUITreeRoot : UITreeNodeWithDisplayRegion -> Maybe KeyActivationWindow
 # parseKeyActivationWindowFromUITreeRoot uiTreeRoot =
 #     uiTreeRoot
@@ -2480,7 +2478,7 @@ def parseKeyActivationWindowFromUITreeRoot(uiTreeRoot: UITreeNodeWithDisplayRegi
 
 
 def parseKeyActiationWindow(windowUiNode: UITreeNodeWithDisplayRegion) -> KeyActivationWindow:
-    pass
+    raise NotImplementedError()
 # parseKeyActivationWindow : UITreeNodeWithDisplayRegion -> KeyActivationWindow
 # parseKeyActivationWindow windowUiNode =
 #     let
@@ -2496,7 +2494,7 @@ def parseKeyActiationWindow(windowUiNode: UITreeNodeWithDisplayRegion) -> KeyAct
 
 
 def parseExpander(uiNode: UITreeNodeWithDisplayRegion) -> Expander:
-    pass
+    raise NotImplementedError()
 # parseExpander : UITreeNodeWithDisplayRegion -> Expander
 # parseExpander uiNode =
 #     let
@@ -2519,7 +2517,7 @@ def parseExpander(uiNode: UITreeNodeWithDisplayRegion) -> Expander:
 
 
 def parseMessageBoxesFromUITreeRoot(uiTreeRoot: UITreeNodeWithDisplayRegion) -> List[MessageBox]:
-    pass
+    raise NotImplementedError()
 # parseMessageBoxesFromUITreeRoot : UITreeNodeWithDisplayRegion -> List MessageBox
 # parseMessageBoxesFromUITreeRoot uiTreeRoot =
 #     uiTreeRoot
@@ -2529,7 +2527,7 @@ def parseMessageBoxesFromUITreeRoot(uiTreeRoot: UITreeNodeWithDisplayRegion) -> 
 
 
 def parseMessageBox(uiNode: UITreeNodeWithDisplayRegion) -> MessageBox:
-    pass
+    raise NotImplementedError()
 # parseMessageBox : UITreeNodeWithDisplayRegion -> MessageBox
 # parseMessageBox uiNode =
 #     let
@@ -2576,7 +2574,7 @@ def parseScrollControls(scrollControlsNode: UITreeNodeWithDisplayRegion) -> Scro
 
 
 def parseLayerAbovemainFromUITreeRoot(uiTreeRoot: UITreeNodeWithDisplayRegion) -> Optional[UITreeNodeWithDisplayRegion]:
-    pass
+    raise NotImplementedError()
 # parseLayerAbovemainFromUITreeRoot : UITreeNodeWithDisplayRegion -> Maybe UITreeNodeWithDisplayRegion
 # parseLayerAbovemainFromUITreeRoot uiTreeRoot =
 #     uiTreeRoot
@@ -2586,8 +2584,9 @@ def parseLayerAbovemainFromUITreeRoot(uiTreeRoot: UITreeNodeWithDisplayRegion) -
 
 
 def getSubstrBetweenXmlTagsAfterMarker(marker: str) -> Callable[[str], Optional[str]]:
+    raise NotImplementedError()
     def fn(x: str) -> Optional[str]:
-        pass
+        raise NotImplementedError()
     return fn
 # getSubstrBetweenXmlTagsAfterMarker : str -> str -> Maybe str
 # getSubstrBetweenXmlTagsAfterMarker marker =
@@ -2599,7 +2598,7 @@ def getSubstrBetweenXmlTagsAfterMarker(marker: str) -> Callable[[str], Optional[
 
 
 def parseNumberTruncatingAfterOptionalDecimalSeparator(numberDisplayText: str) -> Union[str, int]:
-    pass
+    raise NotImplementedError()
 # parseNumberTruncatingAfterOptionalDecimalSeparator : str -> Result str int
 # parseNumberTruncatingAfterOptionalDecimalSeparator numberDisplayText =
 #     let
@@ -2629,7 +2628,7 @@ def parseNumberTruncatingAfterOptionalDecimalSeparator(numberDisplayText: str) -
 
 
 def centerFromDisplayRegion(region: DisplayRegion) -> Location2d:
-    pass
+    raise NotImplementedError()
 # centerFromDisplayRegion : DisplayRegion -> Location2d
 # centerFromDisplayRegion region =
 #     { x = region.x + region.width // 2, y = region.y + region.height // 2 }
@@ -2667,7 +2666,7 @@ def getAllContainedDisplayTexts(uiNode: UITreeNode) -> List[str]:
 #         |> List.filterMap getDisplayText
 
 def getAllContainedDisplayTextsWithRegion(uiNode: UITreeNodeWithDisplayRegion) -> List[Tuple[str, UITreeNodeWithDisplayRegion]]:
-    pass
+    raise NotImplementedError()
 
 # getAllContainedDisplayTextsWithRegion : UITreeNodeWithDisplayRegion -> List ( str, UITreeNodeWithDisplayRegion )
 # getAllContainedDisplayTextsWithRegion uiNode =
@@ -2709,7 +2708,7 @@ def getTexturePathFromDictEntries(x: UITreeNode) -> Optional[str]:
 
 # def getstrPropertyFromDictEntries(dictEntryKey: str) -> Callable[[UITreeNode], Optional[str]]:
 #     def fn(x: UITreeNode) -> Optional[str]:
-#         pass
+#         raise NotImplementedError()
 #     return fn
 # getstrPropertyFromDictEntries : str -> UITreeNode -> Maybe str
 # getstrPropertyFromDictEntries dictEntryKey uiNode =
@@ -2845,8 +2844,9 @@ def getVerticalOffsetFromParent(x: UITreeNode) -> Optional[int]:
 #         >> Maybe.map round
 
 
-# def getMostPopulousDescendantMatchingPredicate(uiTreeNode: UITreeNode, parent: UITreeNode) -> Optional[UITreeNode]:
-#     listDescendantsInUITreeNode(parent)
+def getMostPopulousDescendantMatchingPredicate(uiTreeNode: UITreeNode, parent: UITreeNode) -> Optional[UITreeNode]:
+    raise NotImplementedError()
+    #listDescendantsInUITreeNode(parent)
 # getMostPopulousDescendantMatchingPredicate : (UITreeNode -> bool) -> UITreeNode -> Maybe UITreeNode
 # getMostPopulousDescendantMatchingPredicate predicate parent =
 #     listDescendantsInUITreeNode parent
