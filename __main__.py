@@ -27,11 +27,11 @@ if ui.dronesWindow is not None:
   print(f"Drones in Bay: ${len(ui.dronesWindow.droneGroupInBay.children)}")
   print(f"Drones in Space: ${len(ui.dronesWindow.droneGroupInLocalSpace.children)}")
 
-  if ui.overviewWindow is not None:
-    print("Overview Window")
-    print(ui.overviewWindow)
-    print("Items In Overview: ")
-    print([ x.objectName for x in ui.overviewWindow.entries if x.objectName is not None])
+if ui.overviewWindow is not None:
+  print("Overview Window")
+  print(ui.overviewWindow)
+  print("Items In Overview: ")
+  print([ x.objectName for x in ui.overviewWindow.entries if x.objectName is not None])
 
 
 print("Target Information")

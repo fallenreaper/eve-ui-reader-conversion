@@ -115,7 +115,9 @@ class ShipUIModuleButton(object):
     rampRotationMilli: Optional[int]
 
 
-class ModuleRows(NamedTuple):
+class ModuleRows(object):
+    def __init__(self, **kwargs):
+        self.__dict__.update(kwargs)
     top: List[ShipUIModuleButton]
     middle: List[ShipUIModuleButton]
     bottom: List[ShipUIModuleButton]

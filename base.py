@@ -14,6 +14,7 @@
 # import Regex
 # import Set
 
+from math import pi
 from classes import *
 from typing import Callable, Tuple
 from helpers import *
@@ -190,7 +191,7 @@ def getDisplayRegionFromDictEntries(uiNode: UITreeNode) -> Optional[DisplayRegio
 
     dr = DisplayRegion()
     dr.x = fixedNumberFromPropertyName("_displayX")
-    dr.y = fixedNumberFromPropertyName("displayY")
+    dr.y = fixedNumberFromPropertyName("_displayY")
     dr.width = fixedNumberFromPropertyName("_displayWidth")
     dr.height = fixedNumberFromPropertyName("_displayHeight")
     # print("Display Region: ", vars(dr))
@@ -537,7 +538,8 @@ def parseShipUIFromUITreeRoot(uiTreeRoot: UITreeNodeWithDisplayRegion) -> Option
     maybeHitpointsPercent.shield = getLastValuePercentFromGaugeName('shieldGauge')
     offensiveBuffButtonNames = [x for x in listDescendantsWithDisplayRegion(shipUINode) if x.uiNode.pythonObjectTypeName == 'OffensiveBuffButton']
     # and getNameFromDictEntries(.uiNode)
-    squadronsUI = [parseSquadronsUI(x) for x in listDescendantsWithDisplayRegion(shipUINode) if x.uiNode.pythonObjectTypeName == 'SquadronsUI'][0]
+    _squadronsUI = [parseSquadronsUI(x) for x in listDescendantsWithDisplayRegion(shipUINode) if x.uiNode.pythonObjectTypeName == 'SquadronsUI']
+    squadronsUI = None if len(_squadronsUI) == 0 else squadronsUI[0]
     data = ShipUI()
     data.uiNode = shipUINode
     data.capacitor = capacitor
@@ -657,7 +659,21 @@ def parseShipUIFromUITreeRoot(uiTreeRoot: UITreeNodeWithDisplayRegion) -> Option
 
 
 def parseShipUIModuleButton(slotNode: UITreeNodeWithDisplayRegion, moduleButtonNode: UITreeNodeWithDisplayRegion) -> ShipUIModuleButton:
-    raise NotImplementedError()
+    print("SlotNode: ", slotNode)
+    def rotationFloatFromRampName(rampName: str) -> Optional[float]:
+        _data = [getRotationFloatFromDictEntries(x.uiNode) for x in listDescendantsWithDisplayRegion(slotNode) if rampName in (getNameFromDictEntries(x.uiNode) or [])]
+        return _data[0] if len(_data)>0 else None
+    leftRampRotationFloat = rotationFloatFromRampName("leftRamp") or 0    # A Default Vaule if there is no LeftRamp
+    rightRampRotationFloat = rotationFloatFromRampName("rightRamp") or 0  # A Default Vaule if there is no LeftRamp
+    rampRotationMilli = None if (leftRampRotationFloat<0 or pi * 2.01 < leftRampRotationFloat) or (rightRampRotationFloat<0 or pi * 2.01 < rightRampRotationFloat) else max(0, min(1000, round(1000 - ((leftRampRotationFloat + rightRampRotationFloat) * 500 ) / pi)))
+    result = ShipUIModuleButton()
+    result.uiNode = moduleButtonNode
+    result.slotUINode = slotNode
+    result.isActive = "ramp_active" in  moduleButtonNode.uiNode.dictEntriesOfInterest
+    result.isHiliteVisible = len([x for x in listDescendantsWithDisplayRegion(slotNode) if "Sprite" in x.uiNode.pythonObjectTypeName and 'hilite' in getNameFromDictEntries(x.uiNode) ]) > 0
+    result.rampRotationMilli = rampRotationMilli
+    return result
+
 # parseShipUIModuleButton : { slotNode : UITreeNodeWithDisplayRegion, moduleButtonNode : UITreeNodeWithDisplayRegion } -> ShipUIModuleButton
 # parseShipUIModuleButton { slotNode, moduleButtonNode } =
 #     let
@@ -698,7 +714,23 @@ def parseShipUIModuleButton(slotNode: UITreeNodeWithDisplayRegion, moduleButtonN
 
 
 def parseShipUICapacitorFromUINode(capacitorUINode: UITreeNodeWithDisplayRegion) -> ShipUICapacitor:
-    raise NotImplementedError()
+    pmarks = [ShipUICapacitorPmark(uiNode=x, colorPercent=getColorPercentFromDictEntries(x.uiNode)) for x in listDescendantsWithDisplayRegion(capacitorUINode) if getNameFromDictEntries(x.uiNode) == 'pmark']
+    _maybePmarksFills = [ x.colorPercent if x.colorPercent.a < 20 else None for x in pmarks ]
+    maybePmarksFills = _maybePmarksFills if None not in _maybePmarksFills else None
+    levelFromPmarksPercent = None
+    if maybePmarksFills is not None:
+        pmarksFills = maybePmarksFills
+        if len(pmarksFills) == 0: 
+            levelFromPmarksPercent = None
+        else:
+            levelFromPmarksPercent = len(pmarksFills) * 100 // len(pmarksFills)
+    result = ShipUICapacitor()
+    result.uiNode = capacitorUINode
+    result.pmarks = pmarks
+    result.levelFromPmarksPercent = levelFromPmarksPercent
+    return result
+
+
 # parseShipUICapacitorFromUINode : UITreeNodeWithDisplayRegion -> ShipUICapacitor
 # parseShipUICapacitorFromUINode capacitorUINode =
 #     let
@@ -715,7 +747,7 @@ def parseShipUICapacitorFromUINode(capacitorUINode: UITreeNodeWithDisplayRegion)
 #         maybePmarksFills =
 #             pmarks
 #                 |> List.map (.colorPercent >> Maybe.map (\colorPercent -> colorPercent.a < 20))
-#                 |> Maybe.Extra.combine
+#                 |> Maybe.Extra.combine # None or list.
 #         levelFromPmarksPercent =
 #             maybePmarksFills
 #                 |> Maybe.andThen
@@ -737,19 +769,28 @@ def groupShipUIModulesintoRows(capacitor: ShipUICapacitor, modules: List[ShipUIM
     verticalDistanceThreshold = 20
 
     def verticalCenterOfUINode(uiNode: UITreeNodeWithDisplayRegion) -> int:
-        return uiNode.totalDisplayRegion.y + uiNode.totalDisplayRegion.height / 2
+        print("Y: ", uiNode.totalDisplayRegion.y)
+        print("Height: ", uiNode.totalDisplayRegion.height)
+        return uiNode.totalDisplayRegion.y + (uiNode.totalDisplayRegion.height // 2)
     capacitorVerticalCenter = verticalCenterOfUINode(capacitor.uiNode)
 
     def foldFunction(shipModule: ShipUIModuleButton, previousRows: ModuleRows):
-        if verticalCenterOfUINode(shipModule.uiNode) < (capacitorVerticalCenter - verticalDistanceThreshold):
+        print("Previous Rows", previousRows)
+        verticalCenter = verticalCenterOfUINode(shipModule.uiNode)
+        print("verticalCenter", verticalCenter, "<", (capacitorVerticalCenter - verticalDistanceThreshold), ">", (capacitorVerticalCenter + verticalDistanceThreshold))
+        if verticalCenter < (capacitorVerticalCenter - verticalDistanceThreshold):
             previousRows.top.append(shipModule)
-        elif verticalCenterOfUINode(shipModule.uiNode) > (capacitorVerticalCenter + verticalDistanceThreshold):
+        elif verticalCenter > (capacitorVerticalCenter + verticalDistanceThreshold):
             previousRows.bottom.append(shipModule)
         else:
             previousRows.middle.append(shipModule)
-    _modules = ModuleRows([], [], [])
-    foldr(foldFunction, _modules, modules)
-    return _modules
+        return previousRows
+    _modules = ModuleRows(top=[], middle=[], bottom=[])
+    # print([x for x in modules])
+    print("Modules ", _modules)
+    result: ModuleRows = foldr(foldFunction, _modules, modules)
+    print("Response", len(result.top), len(result.middle), len(result.bottom))
+    return result
 # groupShipUIModulesintoRows :
 #     ShipUICapacitor
 #     -> List ShipUIModuleButton
@@ -777,7 +818,20 @@ def groupShipUIModulesintoRows(capacitor: ShipUICapacitor, modules: List[ShipUIM
 
 
 def parseShipUIIndication(indicationUINode: UITreeNodeWithDisplayRegion) -> ShipUIIndication:
-    raise NotImplementedError()
+    displayTexts = getAllContainedDisplayTexts(indicationUINode.uiNode)
+    _maneuvertype = [ candidateManeuverType for  pattern, candidateManeuverType in [
+            ("Warp", ShipManeuverType.ManeuverWarp),
+            ("Jump", ShipManeuverType.ManeuverJump),
+            ("Orbit", ShipManeuverType.ManeuverOrbit),
+            ("Approach", ShipManeuverType.ManeuverApproach)
+        ] if pattern in displayTexts
+    ]
+    maneuvertype = _maneuvertype[0] if len(_maneuvertype) > 0 else None
+    result = ShipUIIndication()
+    result.maneuverType = maneuvertype
+    result.uiNode = indicationUINode
+    return result
+
 # parseShipUIIndication : UITreeNodeWithDisplayRegion -> ShipUIIndication
 # parseShipUIIndication indicationUINode =
 #     let
@@ -3116,7 +3170,6 @@ def listDescendantsWithDisplayRegion(parent: UITreeNodeWithDisplayRegion) -> Lis
     result = []
     # print("listDecesnatsWithDisplayRegion")
     # pprint(parent)
-
     for child in listChildrenWithDisplayRegion(parent):
         # print("Child Address: ", child.uiNode.pythonObjectAddress)
         result.append(child)
