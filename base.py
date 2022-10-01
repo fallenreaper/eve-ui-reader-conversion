@@ -110,7 +110,8 @@ def parseUserinterfaceFromUITree(uiTree: UITreeNodeWithDisplayRegion) -> ParsedU
 
 def unwrapUITreeNodeChild(child: UITreeNodeChild) -> UITreeNode:
     # print("Type of Child :", type(child))
-    if type(child) == UITreeNodeChild: return child
+    if type(child) == UITreeNodeChild:
+        return child
     # if child is UITreeNodeChild:
     #     return child.
 
@@ -127,7 +128,8 @@ def asUITreeNodeWithDisplayRegion(selfDisplayRegion: DisplayRegion, totalDisplay
     dr = Location2d()
     dr.x = totalDisplayRegion.x
     dr.y = totalDisplayRegion.y
-    x.children = [asUITreeNodeWithInheritedOffset(dr, unwrapUITreeNodeChild(x)) for x in uiNode.children if x is not None] if uiNode.children is not None else None  # TODO: for all children do `unwrapUITreeNodeChild`
+    x.children = [asUITreeNodeWithInheritedOffset(dr, unwrapUITreeNodeChild(
+        x)) for x in uiNode.children if x is not None] if uiNode.children is not None else None  # TODO: for all children do `unwrapUITreeNodeChild`
     x.selfDisplayRegion = selfDisplayRegion
     x.totalDisplayRegion = totalDisplayRegion
     return x
@@ -141,7 +143,7 @@ def asUITreeNodeWithDisplayRegion(selfDisplayRegion: DisplayRegion, totalDisplay
 #     }
 
 
-def asUITreeNodeWithInheritedOffset(inheritedOffset:Location2d, rawNode: UITreeNode) -> UITreeNodeWithDisplayRegion:
+def asUITreeNodeWithInheritedOffset(inheritedOffset: Location2d, rawNode: UITreeNode) -> UITreeNodeWithDisplayRegion:
     selfRegion = getDisplayRegionFromDictEntries(rawNode)
     if selfRegion is None:
         return ChildWithoutRegion(rawNode)
@@ -174,7 +176,8 @@ def getDisplayRegionFromDictEntries(uiNode: UITreeNode) -> Optional[DisplayRegio
         else:
             try:
                 # print("Val", val)
-                if val is None: return 0
+                if val is None:
+                    return 0
                 if type(val) is dict:
                     return int(val.get("int_low32"))
                 return int(val)
@@ -220,7 +223,12 @@ def getDisplayRegionFromDictEntries(uiNode: UITreeNode) -> Optional[DisplayRegio
 
 
 def parseContextMenusFromUITreeRoot(uiTreeRoot: UITreeNodeWithDisplayRegion) -> List[ContextMenu]:
-    raise NotImplementedError()
+    displayRegions = [x for x in listChildrenWithDisplayRegion(
+        uiTreeRoot) if getNameFromDictEntries(x.uiNode).lower() == 'l_menu']
+    if len(displayRegions) == 0:
+        return []
+    layerMenu = displayRegions[0]
+    return[parseContextMenu(x) for x in listChildrenWithDisplayRegion(layerMenu) if 'menu' in x.uiNode.pythonObjectTypeName.lower()]
 
 # parseContextMenusFromUITreeRoot : UITreeNodeWithDisplayRegion -> List ContextMenu
 # parseContextMenusFromUITreeRoot uiTreeRoot =
@@ -439,8 +447,23 @@ def parseInfoPanelAgentMissionsFromInfoPanelContainer(infoPanelContainerNode: UI
 #                 }
 
 
-def parseContextMenu(contextMenuUINOde: UITreeNodeWithDisplayRegion) -> ContextMenu:
-    raise NotImplementedError()
+def parseContextMenu(contextMenuUINode: UITreeNodeWithDisplayRegion) -> ContextMenu:
+    entriesUINodes = [x for x in listDescendantsWithDisplayRegion(
+        contextMenuUINode) if 'menuentry' in x.uiNode.pythonObjectTypeName.lower()]
+    entries = []
+    for entryUiNode in entriesUINodes:
+        texts = [getDisplayText(x.uiNode)
+                 for x in listDescendantsWithDisplayRegion(entryUiNode)]
+        texts.sort(key=len, reverse=True)  # negate?
+        entry = ContextMenuEntry()
+        entry.text = texts[0] if len(texts) > 0 else ''
+        entry.uiNode = entryUiNode
+        entries.append(entry)
+    result = ContextMenu()
+    result.entries = entries
+    result.uiNode = contextMenuUINode
+    return result
+
 # parseContextMenu : UITreeNodeWithDisplayRegion -> ContextMenu
 # parseContextMenu contextMenuUINode =
 #     let
@@ -473,7 +496,65 @@ def parseContextMenu(contextMenuUINOde: UITreeNodeWithDisplayRegion) -> ContextM
 
 
 def parseShipUIFromUITreeRoot(uiTreeRoot: UITreeNodeWithDisplayRegion) -> Optional[ShipUI]:
-    raise NotImplementedError()
+    displays = [x for x in listDescendantsWithDisplayRegion(
+        uiTreeRoot) if x.uiNode.pythonObjectTypeName == 'ShipUI']
+    if len(displays) == 0:
+        return None
+    shipUINode = displays[0]
+    uiNodes = [x for x in listDescendantsWithDisplayRegion(
+        shipUINode) if x.uiNode.pythonObjectTypeName == 'CapacitorContainer']
+    if len(uiNodes) == 0:
+        return None
+    capacitorUINode = uiNodes[0]
+
+    def descendantNodesFromPythonObjectTypeNameEqual(pythonObjectTypeName: str):
+        return [x for x in listDescendantsWithDisplayRegion(shipUINode) if x.uiNode.pythonObjectTypeName == pythonObjectTypeName]
+    capacitor = parseShipUICapacitorFromUINode(capacitorUINode)
+
+    speedGaugeElement = [x for x in listDescendantsWithDisplayRegion(
+        shipUINode) if x.uiNode.pythonObjectTypeName == 'SpeedGauge']
+    if len(speedGaugeElement) == 0:
+        return None
+    speedGaugeElement = speedGaugeElement[0]
+    maybeIndicationNode = [x for x in listDescendantsWithDisplayRegion(
+        shipUINode) if 'indicationcontainer' in (getNameFromDictEntries(x.uiNode) or '').lower()][0]
+    indication = parseShipUIIndication(maybeIndicationNode) or None
+    decendants = [x for x in listDescendantsWithDisplayRegion(shipUINode) if x.uiNode.pythonObjectTypeName == 'ShipSlot']
+    modulebuttons = []
+    for slotNode in decendants:
+        moduleButtonNode = [x for x in listDescendantsWithDisplayRegion(slotNode) if x.uiNode.pythonObjectTypeName == 'ModuleButton'][0]
+        modulebuttons.append(parseShipUIModuleButton(slotNode, moduleButtonNode))
+    def getLastValuePercentFromGaugeName(gaugeName):
+        options = [x for x in listDescendantsWithDisplayRegion(shipUINode) if getNameFromDictEntries(x.uiNode) == gaugeName]
+        if len(options) == 0: return None
+        option = options[0].uiNode.dictEntriesOfInterest.get('_lastValue')
+        if option: option = float(option)
+        option = round(option * 100)
+        return option
+    maybeHitpointsPercent = Hitpoints()
+    maybeHitpointsPercent.armor = getLastValuePercentFromGaugeName('armorGauge')
+    maybeHitpointsPercent.structure = getLastValuePercentFromGaugeName('structureGauge')
+    maybeHitpointsPercent.shield = getLastValuePercentFromGaugeName('shieldGauge')
+    offensiveBuffButtonNames = [x for x in listDescendantsWithDisplayRegion(shipUINode) if x.uiNode.pythonObjectTypeName == 'OffensiveBuffButton']
+    # and getNameFromDictEntries(.uiNode)
+    squadronsUI = [parseSquadronsUI(x) for x in listDescendantsWithDisplayRegion(shipUINode) if x.uiNode.pythonObjectTypeName == 'SquadronsUI'][0]
+    data = ShipUI()
+    data.uiNode = shipUINode
+    data.capacitor = capacitor
+    data.hitpointsPercent = maybeHitpointsPercent
+    data.indication = indication
+    data.moduleButtons = modulebuttons
+    data.moduleButtonsRows = groupShipUIModulesintoRows(capacitor, modulebuttons)
+    data.offensiveBuffButtonNames = offensiveBuffButtonNames
+    data.squadronsUI = squadronsUI
+    data.stopButton = descendantNodesFromPythonObjectTypeNameEqual("StopButton")[0]
+    data.maxSpeedButton = descendantNodesFromPythonObjectTypeNameEqual("MaxSpeedButton")[0]
+    return data
+
+
+
+
+    
 # parseShipUIFromUITreeRoot : UITreeNodeWithDisplayRegion -> Maybe ShipUI
 # parseShipUIFromUITreeRoot uiTreeRoot =
 #     case
@@ -695,7 +776,7 @@ def groupShipUIModulesintoRows(capacitor: ShipUICapacitor, modules: List[ShipUIM
 #             { top = [], middle = [], bottom = [] }
 
 
-def parseShipIndication(indicationUINode: UITreeNodeWithDisplayRegion) -> ShipUIIndication:
+def parseShipUIIndication(indicationUINode: UITreeNodeWithDisplayRegion) -> ShipUIIndication:
     raise NotImplementedError()
 # parseShipUIIndication : UITreeNodeWithDisplayRegion -> ShipUIIndication
 # parseShipUIIndication indicationUINode =
@@ -775,7 +856,7 @@ def parseSquadronAbilityIcon(abilityIconUINode: UITreeNodeWithDisplayRegion) -> 
 
 
 def parseTargetsFromUITreeRoot(x: UITreeNodeWithDisplayRegion) -> List[Target]:
-    raise NotImplementedError()
+    return [parseTarget(y) for y in listDescendantsWithDisplayRegion(x) if y.uiNode.pythonObjectTypeName == 'TargetInBar']
 # parseTargetsFromUITreeRoot : UITreeNodeWithDisplayRegion -> List Target
 # parseTargetsFromUITreeRoot =
 #     listDescendantsWithDisplayRegion
@@ -784,7 +865,25 @@ def parseTargetsFromUITreeRoot(x: UITreeNodeWithDisplayRegion) -> List[Target]:
 
 
 def parseTarget(targetNode: UITreeNodeWithDisplayRegion) -> Target:
-    raise NotImplementedError()
+    textsTopToBottom = getAllContainedDisplayTextsWithRegion(targetNode)
+    textsTopToBottom.sort( key=lambda x: x[1].totalDisplayRegion.y)
+    textsTopToBottom = [x[0] for x in textsTopToBottom]
+    barAndImageCont = [x for x in listDescendantsWithDisplayRegion(targetNode) if getNameFromDictEntries(x.uiNode) == 'barAndImageCont'][0]
+    isActiveTarget = [x for x in listDescendantsInUITreeNode(targetNode.uiNode) if x.pythonObjectTypeName == 'ActiveTargetOnBracket']
+    assignedContainerNode = [x for x in listDescendantsWithDisplayRegion(targetNode) if 'assigned' in getNameFromDictEntries(x.uiNode).lower() ]
+    assignedContainerNode.sort( key = lambda x: x.totalDisplayRegion.width)
+    assignedContainerNode = assignedContainerNode[0]
+
+    assignedIcons = [x for x in listDescendantsWithDisplayRegion(assignedContainerNode) if x.uiNode.pythonObjectTypeName in ['Icon', 'Sprite']]
+
+    result = Target()
+    result.assignedContainerNode = assignedContainerNode
+    result.assignedIcons = assignedIcons
+    result.barAndImageCont = barAndImageCont
+    result.isActiveTarget = isActiveTarget
+    result.textsTopToBottom = textsTopToBottom
+    result.uiNode = targetNode
+    return result
 # parseTarget : UITreeNodeWithDisplayRegion -> Target
 # parseTarget targetNode =
 #     let
@@ -824,7 +923,29 @@ def parseTarget(targetNode: UITreeNodeWithDisplayRegion) -> Target:
 
 
 def parseOverviewWindowFromUITreeRoot(uiTreeRoot: UITreeNodeWithDisplayRegion) -> Optional[OverviewWindow]:
-    raise NotImplementedError()
+    data = [ x for x in listDescendantsWithDisplayRegion(uiTreeRoot) if x.uiNode.pythonObjectTypeName == 'OverView']
+    if len(data) == 0: return None
+    overviewWindowNode = data[0]
+    scrollNode = [x for x in listDescendantsWithDisplayRegion(overviewWindowNode) if "scroll" in x.uiNode.pythonObjectTypeName.lower()][0]
+
+    for _node in listDescendantsWithDisplayRegion(scrollNode):
+        if "ScrollControls" in _node.uiNode.pythonObjectTypeName:
+            scrollControlsNode = _node
+            continue
+        if "scroll" in _node.uiNode.pythonObjectTypeName.lower():
+            headersContrainerNode = _node
+            continue
+    entriesHeaders = [x for x in listDescendantsWithDisplayRegion(headersContrainerNode) if "headers" in x.uiNode.pythonObjectTypeName.lower()][0]
+    entries = [parseOverviewWindowEntry(entriesHeaders, x) for x in listDescendantsWithDisplayRegion(overviewWindowNode) if x.uiNode.pythonObjectTypeName == 'OverviewScrollEntry']
+
+    x = OverviewWindow()
+    x.entries = entries
+    x.entriesHeaders = entriesHeaders
+    x.scrollControls = parseScrollControls(scrollControlsNode) if scrollControlsNode is not None else None
+    x.uiNode = overviewWindowNode
+    return x
+    
+
 # parseOverviewWindowFromUITreeRoot : UITreeNodeWithDisplayRegion -> Maybe OverviewWindow
 # parseOverviewWindowFromUITreeRoot uiTreeRoot =
 #     case
@@ -872,11 +993,50 @@ def parseOverviewWindowFromUITreeRoot(uiTreeRoot: UITreeNodeWithDisplayRegion) -
 #                 }
 
 
-def parseOverviewWindowEntry(entriesHeaders: List[Union[str, UITreeNodeWithDisplayRegion]]) -> Callable[[UITreeNodeWithDisplayRegion], OverviewWindowEntry]:
-    raise NotImplementedError()
-    def fn(x: UITreeNodeWithDisplayRegion) -> OverviewWindowEntry:
-        raise NotImplementedError()
-    return fn
+def parseOverviewWindowEntry(entriesHeaders: List[Tuple[str, UITreeNodeWithDisplayRegion]], overviewEntryNode: UITreeNodeWithDisplayRegion) -> OverviewWindowEntry:
+    textsLeftToRight = [x for x in getAllContainedDisplayTextsWithRegion(overviewEntryNode)]
+    textsLeftToRight.sort(key= lambda x: x[1].totalDisplayRegion.x)
+    textsLeftToRight = [x[0] for x in textsLeftToRight]
+    cellsTexts = []
+    for cellText, cell in getAllContainedDisplayTextsWithRegion(overviewEntryNode):
+        cellMiddle = cell.totalDisplayRegion.x + (cell.totalDisplayRegion.width // 2)
+        maybeHeader = [header for _, header in entriesHeaders if (header.totalDisplayRegion.x < cellMiddle + 1) and (cellMiddle < (header.totalDisplayRegion.x + header.totalDisplayRegion.width -1))]
+        cellsTexts.append( [(headerText, cellText) for headerText, _ in maybeHeader])
+    cellsTexts = {x:y for x,y in cellsTexts}
+    objectDistance = cellsTexts.get("Distance")
+    try:
+        objectDistanceInMeters = parseOverviewEntryDistanceInMetersFromText(objectDistance)
+    except:
+        pass
+    spaceObjectIconNode = [x for x in listDescendantsWithDisplayRegion(overviewEntryNode) if x.uiNode.pythonObjectTypeName == 'SpaceObjectIcon'][0]
+    iconSpriteColorPercent = [getColorPercentFromDictEntries(x.uiNode) for x in listChildrenWithDisplayRegion(overviewEntryNode) if getNameFromDictEntries(x.uiNode) == 'iconSprite']
+    namesUnderSpaceObjectIcon = {getNameFromDictEntries(x) for x in listDescendantsInUITreeNode(spaceObjectIconNode.uiNode)}
+    bgColorFillsPercent = [getColorPercentFromDictEntries(x.uiNode) for x in listDescendantsWithDisplayRegion(overviewEntryNode) if x.uiNode.pythonObjectTypeName == 'Fill' and getNameFromDictEntries(x.uiNode) == 'bgColor']
+    rightAlignedIconsHints = {getHintTextFromDictEntries(y.uiNode).lower() for x in listDescendantsWithDisplayRegion(overviewEntryNode)  for y in listDescendantsWithDisplayRegion(x) if getNameFromDictEntries(x.uiNode) == 'rightAlignedIconContainer'}
+    def rightAlignedIconsHintsContainsTextIgnoringCase(textToSearch: str) -> bool:
+        return textToSearch.lower() in rightAlignedIconsHints
+    result = OverviewWindowEntry()
+    commonIndications = OverviewWindowEntryCommonIndications()
+    commonIndications.targeting = "targeting" in namesUnderSpaceObjectIcon
+    commonIndications.targetedByMe = "targetedByMeIndicator" in namesUnderSpaceObjectIcon
+    commonIndications.isJammingMe = rightAlignedIconsHintsContainsTextIgnoringCase("is jamming me")
+    commonIndications.isWarpDisruptingMe = rightAlignedIconsHintsContainsTextIgnoringCase("is warp disrupting me")
+
+    result.uiNode = overviewEntryNode
+    result.textsLeftToRight = textsLeftToRight
+    result.cellsTexts = cellsTexts
+    result.objectDistance = objectDistance
+    result.objectDistanceInMeters = objectDistanceInMeters
+    result.objectName = cellsTexts.get("Name")
+    result.objectType = cellsTexts.get("Type")
+    result.objectAlliance = cellsTexts.get("Alliance")
+    result.iconSpriteColorPercent = iconSpriteColorPercent
+    result.namesUnderSpaceObjectIcon = namesUnderSpaceObjectIcon
+    result.bgColorFillsPercent = bgColorFillsPercent
+    result.rightAlignedIconsHints = rightAlignedIconsHints
+    result.commonIndications = commonIndications
+    return result
+
 # parseOverviewWindowEntry : List ( str, UITreeNodeWithDisplayRegion ) -> UITreeNodeWithDisplayRegion -> OverviewWindowEntry
 # parseOverviewWindowEntry entriesHeaders overviewEntryNode =
 #     let
@@ -974,11 +1134,22 @@ def parseOverviewWindowEntry(entriesHeaders: List[Union[str, UITreeNodeWithDispl
 
 
 def parseOverviewEntryDistanceInMetersFromText(distanceDisplayTextBeforeTrim: str) -> Union[str, int]:
-    raise NotImplementedError()
+    print("[base parseOverviewEntryDistanceInMetersFromText] Starting Function.")
+    try:
+        reversedNumberTexts = distanceDisplayTextBeforeTrim.strip().split(" ")[-1]
+        unitInMeters = parseDistanceUnitInMeters(reversedNumberTexts)
+        print(reversedNumberTexts)
+        if unitInMeters is None: raise Exception(f"Failed to Parse Distance Unit Text of '{reversedNumberTexts}'")
+        
+        parsedNumber = parseNumberTruncatingAfterOptionalDecimalSeparator(reversedNumberTexts)
+        print("ParsedNumber: ", parsedNumber, type(parsedNumber))
+        return parsedNumber * unitInMeters
+    except Exception as e:
+        print("Exception caught Parsing Overview. ", e)
 # parseOverviewEntryDistanceInMetersFromText : str -> Result str int
 # parseOverviewEntryDistanceInMetersFromText distanceDisplayTextBeforeTrim =
 #     case distanceDisplayTextBeforeTrim |> str.trim |> str.split " " |> List.reverse of
-#         unitText :: reversedNumberTexts ->
+#          :: reversedNumberTexts ->
 #             case parseDistanceUnitInMeters unitText of
 #                 Nothing ->
 #                     Err ("Failed to parse distance unit text of '" ++ unitText ++ "'")
@@ -995,7 +1166,9 @@ def parseOverviewEntryDistanceInMetersFromText(distanceDisplayTextBeforeTrim: st
 
 
 def parseDistanceUnitInMeters(unitText: str) -> Optional[int]:
-    raise NotImplementedError()
+    if unitText == 'm': return 1
+    if unitText == 'km': return 1000
+    return None
 # parseDistanceUnitInMeters : str -> Maybe int
 # parseDistanceUnitInMeters unitText =
 #     case str.trim unitText of
@@ -1008,7 +1181,8 @@ def parseDistanceUnitInMeters(unitText: str) -> Optional[int]:
 
 
 def parseSelectedItemWindowFromUITreeRoot(uiTreeRoot: UITreeNodeWithDisplayRegion) -> Optional[SelectedItemWindow]:
-    raise NotImplementedError()
+    data = [parseSelectedItemWindow(x) for x in listDescendantsWithDisplayRegion(uiTreeRoot) if x.uiNode.pythonObjectTypeName == 'ActiveItem']
+    return None if len(data) == 0 else data[0]
 # parseSelectedItemWindowFromUITreeRoot : UITreeNodeWithDisplayRegion -> Maybe SelectedItemWindow
 # parseSelectedItemWindowFromUITreeRoot uiTreeRoot =
 #     uiTreeRoot
@@ -1040,7 +1214,8 @@ def parseSelectedItemWindow(windowNode: UITreeNodeWithDisplayRegion) -> Selected
 
 
 def parseDronesWindowFromUITreeRoot(uiTreeRoot: UITreeNodeWithDisplayRegion) -> Optional[DronesWindow]:
-    _droneViews = [x for x in listDescendantsWithDisplayRegion(uiTreeRoot) if x.uiNode.pythonObjectTypeName == 'DroneView']
+    _droneViews = [x for x in listDescendantsWithDisplayRegion(
+        uiTreeRoot) if x.uiNode.pythonObjectTypeName == 'DroneView']
     if len(_droneViews) == 0:
         return None
     _droneView = _droneViews[0]
@@ -1055,10 +1230,13 @@ def parseDronesWindowFromUITreeRoot(uiTreeRoot: UITreeNodeWithDisplayRegion) -> 
         if x.uiNode.pythonObjectTypeName == 'DroneEntry':
             droneEntries.append(x)
     droneGroups = [DronesWindowEntryDrone(**x) for x in droneEntries]
-    droneGroups.extend([DronesWindowEntryGroup(header=x, children=[]) for x in droneGroups])
+    droneGroups.extend([DronesWindowEntryGroup(
+        header=x, children=[]) for x in droneGroups])
     droneGroups = dronesGroupTreesFromFlatListOfEntries(droneGroups)
+
     def droneGroupFromHeaderTextPart(headerTextPart: str) -> Optional[DronesWindowEntryGroupStructure]:
-        _data = [x for x in droneGroups if headerTextPart.lower() in x.header.maintext.lower()]
+        _data = [x for x in droneGroups if headerTextPart.lower()
+                 in x.header.maintext.lower()]
         sorted(_data, key=len)
         return _data[0] if len(_data) > 0 else None
     droneWindow = DronesWindow()
@@ -1068,7 +1246,7 @@ def parseDronesWindowFromUITreeRoot(uiTreeRoot: UITreeNodeWithDisplayRegion) -> 
     droneWindow.droneGroups = droneGroupFromHeaderTextPart("in local space")
     return droneWindow
 
-            
+
 # parseDronesWindowFromUITreeRoot : UITreeNodeWithDisplayRegion -> Maybe DronesWindow
 # parseDronesWindowFromUITreeRoot uiTreeRoot =
 #     case
@@ -1127,7 +1305,8 @@ def dronesGroupTreesFromFlatListOfEntries(entriesBeforeOrdering: List[Union[Dron
         if type(entry) == DronesWindowEntryGroup:
             return entry.header.uiNode.totalDisplayRegion.y
         raise Exception("Entry type Incorrect")
-    entriesOrderedVertically = sorted(entriesBeforeOrdering, key=verticalOffsetFromEntry)
+    entriesOrderedVertically = sorted(
+        entriesBeforeOrdering, key=verticalOffsetFromEntry)
     result: List[DronesWindowEntryGroup] = []
     for x in entriesOrderedVertically:
         if type(x) == DronesWindowEntryDrone:
@@ -1137,10 +1316,14 @@ def dronesGroupTreesFromFlatListOfEntries(entriesBeforeOrdering: List[Union[Dron
     if len(result) > 0:
         topmostGroupEntry = result[0]
         _topEntry = verticalOffsetFromEntry(topmostGroupEntry)
-        entriesUpToSibling= [x for x in entriesOrderedVertically if verticalOffsetFromEntry(x) <= _topEntry ] 
-        entriesUpToSibling = [x for x in entriesUpToSibling if type(x) is DronesWindowEntryDrone]
-        childGroupTrees = dronesGroupTreesFromFlatListOfEntries(entriesUpToSibling)
-        childDrones = [x for x in entriesUpToSibling if type(x) == DronesWindowEntryDrone]
+        entriesUpToSibling = [
+            x for x in entriesOrderedVertically if verticalOffsetFromEntry(x) <= _topEntry]
+        entriesUpToSibling = [x for x in entriesUpToSibling if type(
+            x) is DronesWindowEntryDrone]
+        childGroupTrees = dronesGroupTreesFromFlatListOfEntries(
+            entriesUpToSibling)
+        childDrones = [x for x in entriesUpToSibling if type(
+            x) == DronesWindowEntryDrone]
         children = childDrones
         children.extend([DronesWindowEntryGroup(**x) for x in childGroupTrees])
         children.sort(verticalOffsetFromEntry)
@@ -1148,10 +1331,13 @@ def dronesGroupTreesFromFlatListOfEntries(entriesBeforeOrdering: List[Union[Dron
             "header": topmostGroupEntry.header,
             "children": children
         })
-        bottommostDescendantOffset = enumerateDescendantsOfDronesGroup(topmostGroupTree)
+        bottommostDescendantOffset = enumerateDescendantsOfDronesGroup(
+            topmostGroupTree)
         defaultVal = verticalOffsetFromEntry(topmostGroupTree)
-        bottommostDescendantOffset = max([verticalOffsetFromEntry(x) for x in bottommostDescendantOffset]) if len(bottommostDescendantOffset) > 0 else defaultVal
-        entriesBelow = [x for x in entriesOrderedVertically if verticalOffsetFromEntry(x) <= bottommostDescendantOffset]
+        bottommostDescendantOffset = max([verticalOffsetFromEntry(
+            x) for x in bottommostDescendantOffset]) if len(bottommostDescendantOffset) > 0 else defaultVal
+        entriesBelow = [x for x in entriesOrderedVertically if verticalOffsetFromEntry(
+            x) <= bottommostDescendantOffset]
         return [topmostGroupTree].extend(dronesGroupTreesFromFlatListOfEntries(entriesBelow))
     return []
 
@@ -1231,7 +1417,7 @@ def dronesGroupTreesFromFlatListOfEntries(entriesBeforeOrdering: List[Union[Dron
 
 
 def enumerateAllDronesFromDronesGroup(x: DronesWindowEntryGroupStructure) -> List[DronesWindowEntryDroneStructure]:
-    return [ y for y in enumerateDescendantsOfDronesGroup(x) if type(y) == DronesWindowEntryDrone]
+    return [y for y in enumerateDescendantsOfDronesGroup(x) if type(y) == DronesWindowEntryDrone]
 # enumerateAllDronesFromDronesGroup : DronesWindowEntryGroupStructure -> List DronesWindowEntryDroneStructure
 # enumerateAllDronesFromDronesGroup =
 #     enumerateDescendantsOfDronesGroup
@@ -1267,21 +1453,23 @@ def enumerateDescendantsOfDronesGroup(group: DronesWindowEntryGroupStructure) ->
 
 
 def parseDronesWindowDroneGroupHeader(groupHeaderUiNode: UITreeNodeWithDisplayRegion) -> Optional[DronesWindowDroneGroupHeader]:
-    expander = [ x for x in listDescendantsWithDisplayRegion(groupHeaderUiNode) for y in getNameFromDictEntries(x.uiNode) if "expander" in y.lower()]
-    if len(expander) == 0: return None
+    expander = [x for x in listDescendantsWithDisplayRegion(
+        groupHeaderUiNode) for y in getNameFromDictEntries(x.uiNode) if "expander" in y.lower()]
+    if len(expander) == 0:
+        return None
     maintext = getAllContainedDisplayTextsWithRegion(groupHeaderUiNode)
     maintext.sort(key=lambda x: areaFromDisplayRegion(x[1].totalDisplayRegion))
-    maintext = [ x[0] for x in maintext ]
+    maintext = [x[0] for x in maintext]
     maintext = maintext[0] if len(maintext) > 0 else None
     quantityFromTitle = parseQuantityFromDroneGroupTitleText(maintext)
     result = DronesWindowDroneGroupHeader()
     result.maintext = maintext
     result.expander = parseExpander(expander[0])
-    result.quantityFromTitle= quantityFromTitle
+    result.quantityFromTitle = quantityFromTitle
     result.uiNode = groupHeaderUiNode
     return result
 
-    
+
 # parseDronesWindowDroneGroupHeader : UITreeNodeWithDisplayRegion -> Maybe DronesWindowDroneGroupHeader
 # parseDronesWindowDroneGroupHeader groupHeaderUiNode =
 #     case
@@ -1316,10 +1504,12 @@ def parseDronesWindowDroneGroupHeader(groupHeaderUiNode: UITreeNodeWithDisplayRe
 
 def parseQuantityFromDroneGroupTitleText(droneGroupTitleText: str) -> Optional[Union[str, int]]:
     textAfterOpeningParenthesis = droneGroupTitleText.split("(")[1:]
-    if len(textAfterOpeningParenthesis) == 0: return None
+    if len(textAfterOpeningParenthesis) == 0:
+        return None
     _list = "".join(textAfterOpeningParenthesis).split(")")
     try:
-        if len(_list) == 0: return None
+        if len(_list) == 0:
+            return None
         try:
             s = _list[0].strip()
             data = int(s)
@@ -1347,24 +1537,28 @@ def parseQuantityFromDroneGroupTitleText(droneGroupTitleText: str) -> Optional[U
 
 def parseDronesWindowDroneEntry(droneEntryNode: UITreeNodeWithDisplayRegion) -> DronesWindowEntryDroneStructure:
     maintext = getAllContainedDisplayTextsWithRegion(droneEntryNode)
-    maintext.sort( key=lambda x: areaFromDisplayRegion(x[1].totalDisplayRegion) or 0)
+    maintext.sort(key=lambda x: areaFromDisplayRegion(
+        x[1].totalDisplayRegion) or 0)
     maintext = [x[0] for x in maintext][0]
 
     def gaugeValuePercentFromContainerName(containerName: str):
-        gaugeNode= [x for x in listDescendantsWithDisplayRegion(droneEntryNode) if getNameFromDictEntries(x.uiNode) == containerName][0]
+        gaugeNode = [x for x in listDescendantsWithDisplayRegion(
+            droneEntryNode) if getNameFromDictEntries(x.uiNode) == containerName][0]
+
         def gaudeDescendantFromName(gaugeDescendantName: str) -> List[UITreeNodeWithDisplayRegion]:
-            return [x for x in listDescendantsWithDisplayRegion(gaugeNode) if getNameFromDictEntries(x.uiNode)==gaugeDescendantName]
-        
+            return [x for x in listDescendantsWithDisplayRegion(gaugeNode) if getNameFromDictEntries(x.uiNode) == gaugeDescendantName]
+
         gaugeBar = gaudeDescendantFromName("droneGaugeBar")
         droneGaugeBarDmg = gaudeDescendantFromName("droneGaugeBarDmg")
         return ((gaugeBar.totalDisplayRegion.width - droneGaugeBarDmg.totalDisplayRegion.width) * 100) // gaugeBar.totalDisplayRegion.width
-    
+
     shieldPercent = gaugeValuePercentFromContainerName("gauge_shield")
     armorPercent = gaugeValuePercentFromContainerName("gauge_armor")
     structPercent = gaugeValuePercentFromContainerName("gauge_struct")
 
     result = DronesWindowEntryDroneStructure()
-    result.hitpointsPercent = Hitpoints(armor=armorPercent, shield=shieldPercent, structure=structPercent)
+    result.hitpointsPercent = Hitpoints(
+        armor=armorPercent, shield=shieldPercent, structure=structPercent)
     result.maintext = maintext
     result.uiNode = droneEntryNode
     return result
@@ -1429,20 +1623,26 @@ def parseDronesWindowDroneEntry(droneEntryNode: UITreeNodeWithDisplayRegion) -> 
 
 
 def parseProbeScannerWindowFromUITreeRoot(uiTreeRoot: UITreeNodeWithDisplayRegion) -> Optional[ProbeScannerWindow]:
-    displayRegion = [x for x in listDescendantsWithDisplayRegion(uiTreeRoot) if x.uiNode.pythonObjectTypeName == "ProbeScannerWindow"]
-    if len(displayRegion) == 0: return None
+    displayRegion = [x for x in listDescendantsWithDisplayRegion(
+        uiTreeRoot) if x.uiNode.pythonObjectTypeName == "ProbeScannerWindow"]
+    if len(displayRegion) == 0:
+        return None
     windowNode = displayRegion[0]
-    scanResultsNodes: List[UITreeNodeWithDisplayRegion]  = []
+    scanResultsNodes: List[UITreeNodeWithDisplayRegion] = []
     scrollnodes: List[UITreeNodeWithDisplayRegion] = []
     for x in listDescendantsWithDisplayRegion(windowNode):
         if x.uiNode.pythonObjectTypeName == "ScanResultNew":
             scanResultsNodes.append(x)
         if "ResultsContainer" in getNameFromDictEntries(x.uiNode):
-            scrollnodes.extend([y for y in listDescendantsWithDisplayRegion(x) if 'scroll' in y.uiNode.pythonObjectTypeName.lower()])
+            scrollnodes.extend([y for y in listDescendantsWithDisplayRegion(
+                x) if 'scroll' in y.uiNode.pythonObjectTypeName.lower()])
     scrollnode = scrollnodes[0]
-    headersContainerNode = [x for x in listDescendantsWithDisplayRegion(scrollnode) if 'header' in x.uiNode.pythonObjectTypeName.lower()][0]
-    entriesHeaders = getAllContainedDisplayTextsWithRegion(headersContainerNode)
-    scanResults = [parseProbeScanResult(entriesHeaders, x) for x in scanResultsNodes]
+    headersContainerNode = [x for x in listDescendantsWithDisplayRegion(
+        scrollnode) if 'header' in x.uiNode.pythonObjectTypeName.lower()][0]
+    entriesHeaders = getAllContainedDisplayTextsWithRegion(
+        headersContainerNode)
+    scanResults = [parseProbeScanResult(
+        entriesHeaders, x) for x in scanResultsNodes]
 
     result = ProbeScannerWindow()
     result.uiNode = windowNode
@@ -1491,19 +1691,22 @@ def parseProbeScannerWindowFromUITreeRoot(uiTreeRoot: UITreeNodeWithDisplayRegio
 
 def parseProbeScanResult(entriesHeaders: List[Tuple[str, UITreeNodeWithDisplayRegion]], scanResultNode: UITreeNodeWithDisplayRegion) -> ProbeScanResult:
     textsLeftToRight = getAllContainedDisplayTextsWithRegion(scanResultNode)
-    textsLeftToRight.sort( key= lambda x: x[1].totalDisplayRegion.x)
+    textsLeftToRight.sort(key=lambda x: x[1].totalDisplayRegion.x)
     textsLeftToRight = [x[0] for x in textsLeftToRight]
     maybeHeader = []
     for cellText, cell in getAllContainedDisplayTextsWithRegion(scanResultNode):
-        cellMiddle = cell.totalDisplayRegion.x + (cell.totalDisplayRegion.width // 2)
-        header = [header for _, header in entriesHeaders if header.totalDisplayRegion.x < (cellMiddle + 1) and cellMiddle < (header.totalDisplayRegion.x+header.totalDisplayRegion.width -1) ][0]
+        cellMiddle = cell.totalDisplayRegion.x + \
+            (cell.totalDisplayRegion.width // 2)
+        header = [header for _, header in entriesHeaders if header.totalDisplayRegion.x < (
+            cellMiddle + 1) and cellMiddle < (header.totalDisplayRegion.x+header.totalDisplayRegion.width - 1)][0]
         maybeHeader.append((header, cellText))
-    warpButton = [x for x in listDescendantsWithDisplayRegion(scanResultNode) if (getTexturePathFromDictEntries(x.uiNode) or '').endswith('44_32_18.png')][0]
+    warpButton = [x for x in listDescendantsWithDisplayRegion(scanResultNode) if (
+        getTexturePathFromDictEntries(x.uiNode) or '').endswith('44_32_18.png')][0]
     result = ProbeScanResult()
     result.warpButton = warpButton
     result.textsLeftToRight = textsLeftToRight
     result.uiNode = scanResultNode
-    result.cellsTexts = {k:v for k,v in maybeHeader }
+    result.cellsTexts = {k: v for k, v in maybeHeader}
     return result
 
 # parseProbeScanResult : List ( str, UITreeNodeWithDisplayRegion ) -> UITreeNodeWithDisplayRegion -> ProbeScanResult
@@ -1554,14 +1757,19 @@ def parseProbeScanResult(entriesHeaders: List[Tuple[str, UITreeNodeWithDisplayRe
 
 
 def parseDirectionalScannerWindowFromUITreeRoot(uiTreeRoot: UITreeNodeWithDisplayRegion) -> Optional[DirectionalScannerWindow]:
-    displayRegions = [x for x in listDescendantsWithDisplayRegion(uiTreeRoot) if x.uiNode.pythonObjectTypeName == "DirectionalScanner"]
-    if len(displayRegions) == 0: return None
+    displayRegions = [x for x in listDescendantsWithDisplayRegion(
+        uiTreeRoot) if x.uiNode.pythonObjectTypeName == "DirectionalScanner"]
+    if len(displayRegions) == 0:
+        return None
     windowNode = displayRegions[0]
-    scrollNode = [x for x in listDescendantsWithDisplayRegion(windowNode) if 'scroll' in x.uiNode.pythonObjectTypeName.lower()]
-    scrollNode.sort(key= lambda x: areaFromDisplayRegion( x.totalDisplayRegion ) or 0) # Possibly need to Reverse?
+    scrollNode = [x for x in listDescendantsWithDisplayRegion(
+        windowNode) if 'scroll' in x.uiNode.pythonObjectTypeName.lower()]
+    scrollNode.sort(key=lambda x: areaFromDisplayRegion(
+        x.totalDisplayRegion) or 0)  # Possibly need to Reverse?
     scrollNode = scrollNode[0]
 
-    scanResultsNodes = [x for x in listDescendantsWithDisplayRegion(scrollNode) if x.uiNode.pythonObjectTypeName == 'DirectionalScanResultEntry' ]
+    scanResultsNodes = [x for x in listDescendantsWithDisplayRegion(
+        scrollNode) if x.uiNode.pythonObjectTypeName == 'DirectionalScanResultEntry']
     result = DirectionalScannerWindow()
     result.scanResults = scanResultsNodes
     result.scrollNode = scrollNode
@@ -1600,15 +1808,21 @@ def parseDirectionalScannerWindowFromUITreeRoot(uiTreeRoot: UITreeNodeWithDispla
 
 
 def parseStationWindowFromUITreeRoot(uiTreeRoot: UITreeNodeWithDisplayRegion) -> Optional[StationWindow]:
-    displayRegions = [x for x in listDescendantsWithDisplayRegion(uiTreeRoot) if x.uiNode.pythonObjectTypeName == 'LobbyWnd' ]
-    if len(displayRegions) == 0: return None
+    displayRegions = [x for x in listDescendantsWithDisplayRegion(
+        uiTreeRoot) if x.uiNode.pythonObjectTypeName == 'LobbyWnd']
+    if len(displayRegions) == 0:
+        return None
     windowNode = displayRegions[0]
-    buttons = [x for x in listDescendantsWithDisplayRegion(windowNode) if x.uiNode.pythonObjectTypeName == 'Button']
+    buttons = [x for x in listDescendantsWithDisplayRegion(
+        windowNode) if x.uiNode.pythonObjectTypeName == 'Button']
+
     def buttonFromDisplayText(textToSearch: str):
         textToSearchLowercase = textToSearch.lower()
+
         def textMatches(text):
             return text == textToSearchLowercase or (f">{textToSearchLowercase}<") in text
-        _r = [y for x in buttons for y in getAllContainedDisplayTexts(x.uiNode) if textMatches(y.lower().strip()) ]
+        _r = [y for x in buttons for y in getAllContainedDisplayTexts(
+            x.uiNode) if textMatches(y.lower().strip())]
         return _r[0] if len(_r) > 0 else None
     result = StationWindow()
     result.uiNode = windowNode
@@ -1650,7 +1864,7 @@ def parseStationWindowFromUITreeRoot(uiTreeRoot: UITreeNodeWithDisplayRegion) ->
 
 
 def parseInventoryWindowsFromUITreeRoot(uiTreeRoot: UITreeNodeWithDisplayRegion) -> List[InventoryWindow]:
-    return [ parseInventoryWindow(x) for x in listDescendantsWithDisplayRegion(uiTreeRoot) if "InventoryPrimary" in x.uiNode.pythonObjectTypeName or 'ActiveShipCargo' in x.uiNode.pythonObjectTypeName]
+    return [parseInventoryWindow(x) for x in listDescendantsWithDisplayRegion(uiTreeRoot) if "InventoryPrimary" in x.uiNode.pythonObjectTypeName or 'ActiveShipCargo' in x.uiNode.pythonObjectTypeName]
 # parseInventoryWindowsFromUITreeRoot : UITreeNodeWithDisplayRegion -> List InventoryWindow
 # parseInventoryWindowsFromUITreeRoot uiTreeRoot =
 #     uiTreeRoot
@@ -1760,13 +1974,15 @@ def parseInventoryWindow(windowUiNode: UITreeNodeWithDisplayRegion) -> Inventory
 
 
 def getContainedTreeViewEntryRootNodes(parentNode: UITreeNodeWithDisplayRegion) -> List[UITreeNodeWithDisplayRegion]:
-    leftTreeEntriesAllNodes = [ x for x in listDescendantsWithDisplayRegion(parentNode) if x.uiNode.pythonObjectTypeName.startswith("TreeViewEntry")]
+    leftTreeEntriesAllNodes = [x for x in listDescendantsWithDisplayRegion(
+        parentNode) if x.uiNode.pythonObjectTypeName.startswith("TreeViewEntry")]
+
     def isContainedintreeEntry(candidate):
         result = []
         for x in leftTreeEntriesAllNodes:
             result.extend(listDescendantsWithDisplayRegion(x))
         return candidate in result
-    return [ x for x in leftTreeEntriesAllNodes if not isContainedintreeEntry(x) ]
+    return [x for x in leftTreeEntriesAllNodes if not isContainedintreeEntry(x)]
 
 # getContainedTreeViewEntryRootNodes : UITreeNodeWithDisplayRegion -> List UITreeNodeWithDisplayRegion
 # getContainedTreeViewEntryRootNodes parentNode =
@@ -1873,7 +2089,9 @@ def parseInventoryCapacityGaugeText(capacityText: str) -> Union[str, InventoryWi
 
 
 def parseModuleButtonTooltipFromUITreeRoot(uiTreeRoot: UITreeNodeWithDisplayRegion) -> Optional[ModuleButtonTooltip]:
-    raise NotImplementedError()
+     data = [x for x in listDescendantsWithDisplayRegion(uiTreeRoot) if x.uiNode.pythonObjectTypeName == 'ModuleButtonTooltip']
+     if len(data) == 0: return None
+     return parseModuleButtonTooltip(data[0])
 # parseModuleButtonTooltipFromUITreeRoot : UITreeNodeWithDisplayRegion -> Maybe ModuleButtonTooltip
 # parseModuleButtonTooltipFromUITreeRoot uiTreeRoot =
 #     case
@@ -1997,8 +2215,9 @@ def parseKeyShortcutText(keytext: str) -> Optional[CUSTOMKEYCODE]:
 
 def parseChatWindowStacksFromUITreeRoot(uiTreeRoot: UITreeNodeWithDisplayRegion) -> List[ChatWindowStack]:
 
-    matches = (x for x in listDescendantsWithDisplayRegion(uiTreeRoot) if x.uiNode.pythonObjectTypeName == 'ChatWindowStack')
-    return [ parseChatWindowStack(x) for x in matches ]
+    matches = (x for x in listDescendantsWithDisplayRegion(uiTreeRoot)
+               if x.uiNode.pythonObjectTypeName == 'ChatWindowStack')
+    return [parseChatWindowStack(x) for x in matches]
 # parseChatWindowStacksFromUITreeRoot : UITreeNodeWithDisplayRegion -> List ChatWindowStack
 # parseChatWindowStacksFromUITreeRoot uiTreeRoot =
 #     uiTreeRoot
@@ -2008,7 +2227,8 @@ def parseChatWindowStacksFromUITreeRoot(uiTreeRoot: UITreeNodeWithDisplayRegion)
 
 
 def parseChatWindowStack(chatWindowStackUiNode: UITreeNodeWithDisplayRegion) -> ChatWindowStack:
-    _s = [y for y in listDescendantsWithDisplayRegion(chatWindowStackUiNode) if y.uiNode.pythonObjectTypeName == 'XmppChatWindow']
+    _s = [y for y in listDescendantsWithDisplayRegion(
+        chatWindowStackUiNode) if y.uiNode.pythonObjectTypeName == 'XmppChatWindow']
     chatWindowNode = _s[0]
     result = ChatWindowStack()
     result.uiNode = chatWindowStackUiNode
@@ -2068,14 +2288,15 @@ def parseChatWindowUserlist(userListNode: UITreeNodeWithDisplayRegion) -> ChatWi
     visibleUsers = []
     scrollDisplayRegions = []
     for x in listDescendantsWithDisplayRegion(userListNode):
-        if x.uiNode.pythonObjectTypeName in ['XmppChatSimpleUserEntry','XmppChatUserEntry']:
+        if x.uiNode.pythonObjectTypeName in ['XmppChatSimpleUserEntry', 'XmppChatUserEntry']:
             # print("Raw: ", x.uiNode.pythonObjectTypeName, x.uiNode.pythonObjectAddress)
             _c = parseChatUserEntry(x)
             # print("_c", _c)
             visibleUsers.append(_c)
         if 'ScrollControls' in x.uiNode.pythonObjectTypeName:
             scrollDisplayRegions.append(x)
-    scrollControls = parseScrollControls(scrollDisplayRegions[0]) if len(scrollDisplayRegions) > 0 else None
+    scrollControls = parseScrollControls(scrollDisplayRegions[0]) if len(
+        scrollDisplayRegions) > 0 else None
     result = ChatWindowUserlist()
     result.uiNode = userListNode
     result.visibleUsers = visibleUsers
@@ -2106,22 +2327,25 @@ def parseChatUserEntry(chatUserUiNode: UITreeNodeWithDisplayRegion) -> ChatUserE
     # print([x.uiNode.pythonObjectTypeName for x in listDescendantsWithDisplayRegion(chatUserUiNode)])
     # print("Done.")
 
-    standingIconNodes = [x for x in listDescendantsWithDisplayRegion(chatUserUiNode) if x.uiNode.pythonObjectTypeName == 'FlagIconWithState']
+    standingIconNodes = [x for x in listDescendantsWithDisplayRegion(
+        chatUserUiNode) if x.uiNode.pythonObjectTypeName == 'FlagIconWithState']
     # print(standingIconNodes)
-    standingIconNode = standingIconNodes[0] if len(standingIconNodes) > 0 else None
-    names = [x for x in getAllContainedDisplayTexts(chatUserUiNode.uiNode) if x is not None]
-    names.sort( key=len, reverse=True)
+    standingIconNode = standingIconNodes[0] if len(
+        standingIconNodes) > 0 else None
+    names = [x for x in getAllContainedDisplayTexts(
+        chatUserUiNode.uiNode) if x is not None]
+    names.sort(key=len, reverse=True)
     # print("Names: " , names)
     name = names[0]
     standingIconHint = None
     if standingIconNode is not None:
-        standingIconHint = getHintTextFromDictEntries(standingIconNode.uiNode) 
+        standingIconHint = getHintTextFromDictEntries(standingIconNode.uiNode)
     result = ChatUserEntry()
     result.name = name
     result.standingIconHint = standingIconHint
     result.uiNode = chatUserUiNode
     return result
-    
+
 # parseChatUserEntry : UITreeNodeWithDisplayRegion -> ChatUserEntry
 # parseChatUserEntry chatUserUiNode =
 #     let
@@ -2226,7 +2450,8 @@ def parseSurveyScanWindow(windowUiNode: UITreeNodeWithDisplayRegion) -> SurveySc
 
 
 def parseBookmarkLocationWindowFromUITreeRoot(uiTreeRoot: UITreeNodeWithDisplayRegion) -> Optional[BookmarkLocationWindow]:
-    raise NotImplementedError()
+    data = [parseBookmarkLocationWindow(x) for x in listDescendantsWithDisplayRegion(uiTreeRoot) if x.uiNode.pythonObjectTypeName == 'BookmarkLocationWindow']
+    return None if len(data) == 0 else data[0]
 # parseBookmarkLocationWindowFromUITreeRoot : UITreeNodeWithDisplayRegion -> Maybe BookmarkLocationWindow
 # parseBookmarkLocationWindowFromUITreeRoot uiTreeRoot =
 #     uiTreeRoot
@@ -2236,8 +2461,17 @@ def parseBookmarkLocationWindowFromUITreeRoot(uiTreeRoot: UITreeNodeWithDisplayR
 #         |> Maybe.map parseBookmarkLocationWindow
 
 
-def parseBookmarkLocationWindow(windowuinode: UITreeNodeWithDisplayRegion) -> BookmarkLocationWindow:
-    raise NotImplementedError()
+def parseBookmarkLocationWindow(windowUINode: UITreeNodeWithDisplayRegion) -> BookmarkLocationWindow:
+    def buttonFromLabelText(labelText: str) -> UITreeNodeWithDisplayRegion:
+        data = [x for x in listDescendantsWithDisplayRegion(windowUINode) if 'Button' in x.uiNode.pythonObjectTypeNam and labelText.lower() in [y.strip().lower() for y in getAllContainedDisplayTexts(x.uiNode)]]
+        data.sort( key=lambda x: areaFromDisplayRegion(x.totalDisplayRegion) or 0)
+        return data[0]
+    r = BookmarkLocationWindow()
+    r.uiNode = windowUINode
+    r.cancelButton = buttonFromLabelText('cancel')
+    r.submitButton = buttonFromLabelText('submit')
+    return r
+    
 # parseBookmarkLocationWindow : UITreeNodeWithDisplayRegion -> BookmarkLocationWindow
 # parseBookmarkLocationWindow windowUINode =
 #     let
@@ -2266,7 +2500,7 @@ def parseRepairShopWindowFromUITreeRoot(uiTreeRoot: UITreeNodeWithDisplayRegion)
 #         |> Maybe.map parseRepairShopWindow
 
 
-def uiTreeRoot(windowUINode: UITreeNodeWithDisplayRegion) -> RepairShopWindow:
+def parseRepairShopWindow(windowUINode: UITreeNodeWithDisplayRegion) -> RepairShopWindow:
     raise NotImplementedError()
 # parseRepairShopWindow : UITreeNodeWithDisplayRegion -> RepairShopWindow
 # parseRepairShopWindow windowUINode =
@@ -2553,7 +2787,8 @@ def parseMessageBox(uiNode: UITreeNodeWithDisplayRegion) -> MessageBox:
 
 
 def parseScrollControls(scrollControlsNode: UITreeNodeWithDisplayRegion) -> ScrollControls:
-    scrollHandles = [x for x in listDescendantsWithDisplayRegion(scrollControlsNode) if x.uiNode.pythonObjectTypeName == 'ScrollHandle' ]
+    scrollHandles = [x for x in listDescendantsWithDisplayRegion(
+        scrollControlsNode) if x.uiNode.pythonObjectTypeName == 'ScrollHandle']
     scrollHandle = scrollHandles[0]
     sc = ScrollControls()
     sc.scrollHandle = scrollHandle
@@ -2585,6 +2820,7 @@ def parseLayerAbovemainFromUITreeRoot(uiTreeRoot: UITreeNodeWithDisplayRegion) -
 
 def getSubstrBetweenXmlTagsAfterMarker(marker: str) -> Callable[[str], Optional[str]]:
     raise NotImplementedError()
+
     def fn(x: str) -> Optional[str]:
         raise NotImplementedError()
     return fn
@@ -2653,18 +2889,20 @@ def getDisplayText(uiNode: UITreeNode) -> Optional[str]:
 #         |> List.sortBy (str.length >> negate)
 #         |> List.head
 
+
 def getAllContainedDisplayTexts(uiNode: UITreeNode) -> List[str]:
     _list = [uiNode]
     _decendants = listDescendantsInUITreeNode(uiNode)
     if _decendants is not None:
         _list.extend(_decendants)
-    _data = [getDisplayText(x) for x in _list if x is not None ]
-    return [ x for x in _data if x is not None]
+    _data = [getDisplayText(x) for x in _list if x is not None]
+    return [x for x in _data if x is not None]
 # getAllContainedDisplayTexts : UITreeNode -> List str
 # getAllContainedDisplayTexts uiNode =
 #     uiNode
 #         :: (uiNode |> listDescendantsInUITreeNode)
 #         |> List.filterMap getDisplayText
+
 
 def getAllContainedDisplayTextsWithRegion(uiNode: UITreeNodeWithDisplayRegion) -> List[Tuple[str, UITreeNodeWithDisplayRegion]]:
     raise NotImplementedError()
@@ -2741,7 +2979,7 @@ def jsonDecodeColorPercent(x: Dict) -> Optional[ColorComponents]:
     if None in [_c.a, _c.r, _c.b, _c.g]:
         return None
     return _c
-    
+
 # jsonDecodeColorPercent : Json.Decode.Decoder ColorComponents
 # jsonDecodeColorPercent =
 #     Json.Decode.map4 ColorComponents
@@ -2799,8 +3037,8 @@ def getHorizontalOffsetFromParentAndWidth(uiNode: UITreeNode) -> Optional[Offset
         return ow
     except Exception as e:
         return None
-    
-        
+
+
 # getHorizontalOffsetFromParentAndWidth : UITreeNode -> Maybe { offset : int, width : int }
 # getHorizontalOffsetFromParentAndWidth uiNode =
 #     let
@@ -2847,7 +3085,7 @@ def getVerticalOffsetFromParent(x: UITreeNode) -> Optional[int]:
 
 def getMostPopulousDescendantMatchingPredicate(uiTreeNode: UITreeNode, parent: UITreeNode) -> Optional[UITreeNode]:
     raise NotImplementedError()
-    #listDescendantsInUITreeNode(parent)
+    # listDescendantsInUITreeNode(parent)
 # getMostPopulousDescendantMatchingPredicate : (UITreeNode -> bool) -> UITreeNode -> Maybe UITreeNode
 # getMostPopulousDescendantMatchingPredicate predicate parent =
 #     listDescendantsInUITreeNode parent
@@ -2855,6 +3093,7 @@ def getMostPopulousDescendantMatchingPredicate(uiTreeNode: UITreeNode, parent: U
 #         |> List.sortBy countDescendantsInUITreeNode
 #         |> List.reverse
 #         |> List.head
+
 
 def listDescendantsInUITreeNode(parent: UITreeNode) -> List[UITreeNode]:
     _p = parent.children or []
@@ -2871,7 +3110,6 @@ def listDescendantsInUITreeNode(parent: UITreeNode) -> List[UITreeNode]:
 #         |> Maybe.withDefault []
 #         |> List.map unwrapUITreeNodeChild
 #         |> List.concatMap (\child -> child :: listDescendantsInUITreeNode child)
-
 
 
 def listDescendantsWithDisplayRegion(parent: UITreeNodeWithDisplayRegion) -> List[UITreeNodeWithDisplayRegion]:
@@ -2897,8 +3135,8 @@ def listChildrenWithDisplayRegion(parent: UITreeNodeWithDisplayRegion) -> List[U
     # print("Child Nodes: ", parent.children)
     d = parent.children or []
     # print("D: ", [type(child) for child in d])
-    return [ child for child in d if type(child) == UITreeNodeWithDisplayRegion]
-            
+    return [child for child in d if type(child) == UITreeNodeWithDisplayRegion]
+
 # listChildrenWithDisplayRegion : UITreeNodeWithDisplayRegion -> List UITreeNodeWithDisplayRegion
 # listChildrenWithDisplayRegion parent =
 #     parent.children
